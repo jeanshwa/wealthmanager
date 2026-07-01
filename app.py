@@ -637,14 +637,29 @@ def page_cashflow():
 
     # Expenses
     st.subheader(t("expenses"))
+    # Auto-calculate total annual mortgage from properties
+    total_monthly_repay = sum(p.get("monthly_repay", 0) for p in d["properties"])
+    total_annual_repay = round(total_monthly_repay * 12)
+    # Auto-update the mortgage expense item
+    for exp in d["expenses"]:
+        if "房贷" in exp["name"] or "mortgage" in exp["name"].lower():
+            exp["annual"] = total_annual_repay
     exp_rm = []
     for i, exp in enumerate(d["expenses"]):
-        c1, c2, c3, c4 = st.columns([3, 2, 1, 0.5])
-        exp["name"] = c1.text_input(t("name"), exp["name"], key=f"en_{i}")
-        exp["annual"] = money_input(t("amount_annual"), exp["annual"], f"ea_{i}")
-        c3.caption(f"月均 {CUR_SYMBOLS.get(dc,'$')}{exp['annual']/12:,.0f}")
-        if c4.button("✕", key=f"erm_{i}"):
-            exp_rm.append(i)
+        is_mortgage = "房贷" in exp["name"] or "mortgage" in exp["name"].lower()
+        if is_mortgage:
+            c1, c2, c3, c4 = st.columns([3, 2, 1, 0.5])
+            c1.text_input(t("name"), exp["name"], key=f"en_{i}", disabled=True)
+            c2.metric("", f"{total_annual_repay:,}")
+            c3.caption(f"月均 {CUR_SYMBOLS.get(dc,'$')}{total_monthly_repay:,.0f}")
+            c4.caption("🔗 自动" if st.session_state.lang == "zh" else "🔗 Auto")
+        else:
+            c1, c2, c3, c4 = st.columns([3, 2, 1, 0.5])
+            exp["name"] = c1.text_input(t("name"), exp["name"], key=f"en_{i}")
+            exp["annual"] = money_input(t("amount_annual"), exp["annual"], f"ea_{i}")
+            c3.caption(f"月均 {CUR_SYMBOLS.get(dc,'$')}{exp['annual']/12:,.0f}")
+            if c4.button("✕", key=f"erm_{i}"):
+                exp_rm.append(i)
     for i in sorted(exp_rm, reverse=True):
         d["expenses"].pop(i); st.rerun()
     if st.button("＋ 添加支出"):
