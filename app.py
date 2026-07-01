@@ -139,6 +139,77 @@ TR = {
     "import_data": {"zh": "📂 导入数据", "en": "📂 Import Data"},
     "reset_data": {"zh": "🗑️ 重置所有数据", "en": "🗑️ Reset All Data"},
     "about": {"zh": "关于", "en": "About"},
+    "currency_label": {"zh": t("currency_label"), "en": "Currency"},
+    "return_pct": {"zh": t("return_pct"), "en": "Return%"},
+    "add_income": {"zh": t("add_income"), "en": "＋ Add Income"},
+    "add_expense": {"zh": t("add_expense"), "en": "＋ Add Expense"},
+    "add_super_item": {"zh": t("add_super_item"), "en": "＋ Add Super Fund Item"},
+    "new_property": {"zh": "新房产", "en": "New Property"},
+    "new_item": {"zh": "新项目", "en": "New Item"},
+    "new_asset": {"zh": "新资产", "en": "New Asset"},
+    "new_income": {"zh": "新收入", "en": "New Income"},
+    "new_expense": {"zh": "新支出", "en": "New Expense"},
+    "auto_link": {"zh": "🔗自动", "en": "🔗Auto"},
+    "monthly": {"zh": "月", "en": "Mo."},
+    "equity": {"zh": "净值", "en": "Equity"},
+    "sf_total_label": {"zh": "Super Fund 总值", "en": "Super Fund Total"},
+    "fx_label": {"zh": "汇率", "en": "FX Rates"},
+    "current_super_total": {"zh": "当前 Super Fund 总值 (AUD)", "en": "Current Super Fund Total (AUD)"},
+    "surplus_ok": {"zh": "✅ 超额", "en": "✅ Surplus"},
+    "shortfall": {"zh": "⚠️ 不足", "en": "⚠️ Shortfall"},
+    "need_more_contrib": {"zh": "需增加供款", "en": "Increase contributions"},
+    "lifestyle_settings": {"zh": "🏠 生活方式设置", "en": "🏠 Lifestyle Settings"},
+    "accumulation": {"zh": "累积阶段", "en": "Accumulation"},
+    "drawdown": {"zh": "提取阶段", "en": "Drawdown"},
+    "age": {"zh": "年龄", "en": "Age"},
+    "capital": {"zh": "本金", "en": "Capital"},
+    "years_after_retire": {"zh": "退休后年数", "en": "Years After Retirement"},
+    "conservative": {"zh": "保守 2.5%", "en": "Conservative 2.5%"},
+    "baseline": {"zh": "基准 3.5%", "en": "Baseline 3.5%"},
+    "optimistic": {"zh": "乐观 4.5%", "en": "Optimistic 4.5%"},
+    "age_suffix": {"zh": "岁", "en": ""},
+    "no_crash": {"zh": "无崩盘", "en": "No Crash"},
+    "crash_yr1": {"zh": "退休第1年崩盘", "en": "Crash Year 1"},
+    "crash_yr5": {"zh": "退休第5年崩盘", "en": "Crash Year 5"},
+    "crash_yr10": {"zh": "退休第10年崩盘", "en": "Crash Year 10"},
+    "crash_bucket": {"zh": "第1年崩盘+现金桶", "en": "Crash Y1 + Cash Bucket"},
+    "fetch_fx": {"zh": "🔄 获取实时汇率", "en": "🔄 Fetch Live Rates"},
+    "fx_updated": {"zh": "✅ 汇率已更新（Yahoo Finance）", "en": "✅ Rates updated (Yahoo Finance)"},
+    "fx_error": {"zh": "❌ 获取失败，请手动输入", "en": "❌ Fetch failed, enter manually"},
+    "fx_hedge_tip": {"zh": "💱 天然对冲：AUD贬→美股更值钱(+)，但中国开支更贵(−)。净敞口偏「喜欢弱AUD」。无需额外FX对冲。", "en": "💱 Natural hedge: weak AUD boosts US ETF value but increases China costs. Net exposure favours weak AUD. No extra FX hedge needed."},
+    "baseline_label": {"zh": "基准", "en": "Baseline"},
+    "tax_label": {"zh": "税", "en": "Tax"},
+    "enter_data_first": {"zh": "请先在「资产管理」页录入数据", "en": "Enter data in Assets page first"},
+    "sf_concentration_warn": {"zh": "Super Fund {pct:.0f}% 集中在 {name} — 流动性风险高", "en": "Super Fund {pct:.0f}% concentrated in {name} — liquidity risk"},
+    "retire_ok": {"zh": "退休目标可达 ✅", "en": "Retirement target achievable ✅"},
+    "retire_gap_warn": {"zh": "退休缺口 {gap}，需增加供款或调整退休计划", "en": "Retirement gap {gap}, increase contributions or adjust plan"},
+    "passive_retire_note": {"zh": "被动收入 {p}/年 → 实际净提取 {w}/年（提取率 {r}%）", "en": "Passive income {p}/yr → net withdrawal {w}/yr (rate {r}%)"},
+    "passive_auto_note": {"zh": "/年（自动计入退休规划）", "en": "/yr (auto-included in retirement plan)"},
+    "suggest_ok": {"zh": "💡 基准情景下目标可达。商务舱预算 (~{cost}/年) 是天然安全阀。", "en": "💡 Target achievable at baseline. Business class budget (~{cost}/yr) is a natural safety valve."},
+    "suggest_gap": {"zh": "💡 需额外每年供款约 {extra} 或推迟退休 2–3 年。", "en": "💡 Need additional ~{extra}/yr contribution or delay retirement 2-3 years."},
+    "div293_over": {"zh": "⚠️ {name}: 收入+CC=${th:,.0f} 超$250k → Division 293 额外15%。但总税率30%仍远低于边际税率。", "en": "⚠️ {name}: Income+CC=${th:,.0f} over $250k → Division 293 extra 15%. But 30% total still well below marginal rate."},
+    "div293_room": {"zh": "ℹ️ {name}: 距 Division 293 阈值还有 ${room:,.0f} 空间。", "en": "ℹ️ {name}: ${room:,.0f} room before Division 293 threshold."},
+    "mc_ok": {"zh": "🎲 {sr:.0f}% 成功率。建议保留 2 年现金桶 ({bucket}) 应对 sequence risk。", "en": "🎲 {sr:.0f}% success rate. Keep 2yr cash bucket ({bucket}) for sequence risk."},
+    "mc_warn": {"zh": "🎲 {sr:.0f}% 成功率，略有风险。可降低提取或增加本金 10-15%。", "en": "🎲 {sr:.0f}% success rate, some risk. Reduce withdrawal or increase capital 10-15%."},
+    "mc_bad": {"zh": "🎲 {sr:.0f}% 成功率偏低。建议降提取/增本金/推迟退休。", "en": "🎲 {sr:.0f}% success rate is low. Reduce withdrawal / increase capital / delay retirement."},
+    "git_push_ok": {"zh": "✅ 推送成功！Streamlit Cloud 将自动重新部署。", "en": "✅ Push successful! Streamlit Cloud will auto-redeploy."},
+    "git_push_fail": {"zh": "推送失败", "en": "Push failed"},
+    "git_no_git": {"zh": "未找到 git 命令。请确保已安装 Git 并在项目目录中运行。", "en": "Git not found. Ensure Git is installed and run from the project directory."},
+    "import_ok": {"zh": "✅ 导入成功！", "en": "✅ Import successful!"},
+    "import_fail": {"zh": "导入失败", "en": "Import failed"},
+    "persistence_note": {"zh": "🖥️ 本地：自动写入 wealth_data.json\n\n☁️ Cloud：自动存入浏览器 localStorage，刷新不丢失", "en": "🖥️ Local: auto-saves to wealth_data.json\n\n☁️ Cloud: auto-saves to browser localStorage, persists on refresh"},
+    "git_caption": {"zh": "将代码推送到 Git 仓库（wealth_data.json 不会被推送，数据安全）", "en": "Push code to Git repo (wealth_data.json is gitignored, data stays safe)"},
+    "about_text": {"zh": "Wealth Manager v1.0 · 仅供个人财务规划参考，不构成理财或税务建议。\n\nBuilt with Streamlit + Plotly · 数据存储在本地。澳洲税率/Super 规则基于 2025-26 财年。", "en": "Wealth Manager v1.0 · For personal planning only, not financial advice.\n\nBuilt with Streamlit + Plotly · Data stored locally. AU tax/super rules based on FY2025-26."},
+    "not_financial_advice": {"zh": "仅供参考，不构成理财建议", "en": "Not financial advice"},
+    "au_cost_aud": {"zh": "澳洲期间年开支 (AUD)", "en": "Australia Annual Cost (AUD)"},
+    "cn_cost_aud": {"zh": "中国期间年开支 (AUD)", "en": "China Annual Cost (AUD)"},
+    "ticket_aud": {"zh": "人均往返票价 (AUD)", "en": "Ticket Price per person RT (AUD)"},
+    "health_ins_aud": {"zh": "国际医疗险/年 (AUD)", "en": "Int\'l Health Insurance/yr (AUD)"},
+    "contrib_aud": {"zh": "年供款 (AUD)", "en": "Annual Contribution (AUD)"},
+    "super_bal_aud": {"zh": "Super 余额 (AUD)", "en": "Super Balance (AUD)"},
+    "sg_aud": {"zh": "已收 SG/年 (AUD)", "en": "SG Received/yr (AUD)"},
+    "income_aud": {"zh": "个人收入 (AUD)", "en": "Personal Income (AUD)"},
+    "error_label": {"zh": "错误", "en": "Error"},
     "git_update": {"zh": "🚀 一键推送到 Git", "en": "🚀 Push to Git"},
     "login_title": {"zh": "💰 个人资产管理", "en": "💰 Wealth Manager"},
     "login_prompt": {"zh": "请输入密码", "en": "Enter Password"},
@@ -500,10 +571,9 @@ def page_dashboard():
     needed = annual_exp_ret * 25
     gap = cap_retire - needed
     c2.metric(t("retirement_gap"), fmt_cur(gap, "AUD"), "✅" if gap >= 0 else "⚠️")
-    c3.metric(t("retire_age"), f"{d['retirement']['target_age']}", "✅" if gap >= 0 else "需增加供款")
+    c3.metric(t("retire_age"), f"{d['retirement']['target_age']}", "✅" if gap >= 0 else t("need_more_contrib"))
     if passive > 0:
-        st.info(f"💰 {t('passive_income')}: {fmt_cur(passive, 'AUD')} (退休时抵减提取额)" if st.session_state.lang == "zh"
-            else f"💰 {t('passive_income')}: {fmt_cur(passive, 'AUD')} (offsets retirement withdrawals)")
+        st.info(f"💰 {t('passive_income')}: {fmt_cur(passive, 'AUD')}" + (" (退休时抵减提取额)" if st.session_state.lang == "zh" else " (offsets retirement withdrawals)"))
 
     col1, col2 = st.columns(2)
     with col1:
@@ -518,17 +588,17 @@ def page_dashboard():
             fig.add_annotation(text=fmt_cur(nw, dc), x=0.5, y=0.5, font=dict(size=18, color="#e6edf3"), showarrow=False)
             st.plotly_chart(fig, use_container_width=True)
         else:
-            st.info("请先在「资产管理」页录入数据" if st.session_state.lang == "zh" else "Enter data in Assets page first")
+            st.info(t("enter_data_first"))
     with col2:
         st.subheader(t("net_worth_proj"))
         r = d["retirement"]
         fig = go.Figure()
         fig.add_trace(go.Scatter(x=list(range(r["current_age"], r["target_age"]+1)), y=acc, mode="lines",
-            name="累积", line=dict(color="#3fb950", width=2), fill="tozeroy", fillcolor="rgba(63,185,80,0.1)"))
+            name=t("accumulation"), line=dict(color="#3fb950", width=2), fill="tozeroy", fillcolor="rgba(63,185,80,0.1)"))
         fig.add_trace(go.Scatter(x=list(range(r["target_age"], r["life_expectancy"]+1)), y=draw, mode="lines",
-            name="提取", line=dict(color="#f85149", width=2), fill="tozeroy", fillcolor="rgba(248,81,73,0.1)"))
+            name=t("drawdown"), line=dict(color="#f85149", width=2), fill="tozeroy", fillcolor="rgba(248,81,73,0.1)"))
         fig.add_hline(y=0, line_dash="dash", line_color="rgba(255,255,255,0.3)")
-        fig.update_layout(**PLOTLY_LAYOUT, height=320, xaxis_title="年龄", yaxis_title=dc)
+        fig.update_layout(**PLOTLY_LAYOUT, height=320, xaxis_title=t("age"), yaxis_title=dc)
         st.plotly_chart(fig, use_container_width=True)
     # Alerts
     st.subheader(t("alerts"))
@@ -537,11 +607,11 @@ def page_dashboard():
         mx = max(d["super_fund"], key=lambda s: to_aud(s["value"], s["currency"], d["fx_rates"]))
         pct = to_aud(mx["value"], mx["currency"], d["fx_rates"]) / sf_total * 100
         if pct > 70:
-            st.warning(f"Super Fund {pct:.0f}% 集中在 {mx['name']} — 流动性风险高")
+            st.warning(t("sf_concentration_warn").format(pct=pct, name=mx["name"]))
     if gap < 0:
-        st.error(f"退休缺口 {fmt_cur(abs(gap), dc)}，需增加供款或调整退休计划")
+        st.error(t("retire_gap_warn").format(gap=fmt_cur(abs(gap), dc)))
     else:
-        st.success("退休目标可达 ✅")
+        st.success(t("retire_ok"))
 
 
 def page_assets():
@@ -554,7 +624,7 @@ def page_assets():
         with st.expander(p["name"], expanded=True):
             c1, c2 = st.columns([3, 1])
             p["name"] = c1.text_input(t("name"), p["name"], key=f"pn_{i}")
-            p["currency"] = c2.selectbox("货币", CURRENCIES, index=CURRENCIES.index(p["currency"]), key=f"pc_{i}",
+            p["currency"] = c2.selectbox(t("currency_label"), CURRENCIES, index=CURRENCIES.index(p["currency"]), key=f"pc_{i}",
                 format_func=lambda x: f"{CUR_FLAGS[x]} {x}")
             c1, c2 = st.columns(2)
             p["value"] = money_input(t("market_value"), p["value"], f"pv_{i}")
@@ -568,13 +638,13 @@ def page_assets():
             p["monthly_repay"] = auto_repay
             c3.metric(t("monthly_repay"), f"{CUR_SYMBOLS[p['currency']]}{auto_repay:,.0f}")
             equity = p["value"] - p["mortgage"]
-            st.caption(f"净值: {CUR_SYMBOLS[p['currency']]}{equity:,.0f} → {fmt_cur(to_display(equity, p['currency'], dc, fx), dc)}")
+            st.caption(f"{t('equity')}: {CUR_SYMBOLS[p['currency']]}{equity:,.0f} → {fmt_cur(to_display(equity, p['currency'], dc, fx), dc)}")
             if st.button(t("remove"), key=f"prm_{i}"):
                 props_rm.append(i)
     for i in sorted(props_rm, reverse=True):
         d["properties"].pop(i); st.rerun()
     if st.button(t("add_property")):
-        d["properties"].append({"name": "新房产", "value": 0, "currency": "AUD", "mortgage": 0,
+        d["properties"].append({"name": t("new_property"), "value": 0, "currency": "AUD", "mortgage": 0,
             "interest_rate": 6.0, "loan_years": 25, "monthly_repay": 0}); st.rerun()
 
     # Super Fund
@@ -586,9 +656,9 @@ def page_assets():
         s["name"] = c2.text_input(t("name"), s["name"], key=f"sn_{i}")
         s["value"] = money_input(t("market_value"), s["value"], f"sv_{i}")
     sf_aud = sum(to_aud(s["value"], s["currency"], fx) for s in d["super_fund"])
-    st.caption(f"Super Fund 总值: {fmt_cur(to_display(sf_aud, 'AUD', dc, fx), dc)}")
-    if st.button("＋ 添加 Super Fund 项目"):
-        d["super_fund"].append({"name": "新项目", "value": 0, "currency": "AUD"}); st.rerun()
+    st.caption(f"{t('sf_total_label')}: {fmt_cur(to_display(sf_aud, 'AUD', dc, fx), dc)}")
+    if st.button(t("add_super_item")):
+        d["super_fund"].append({"name": t("new_item"), "value": 0, "currency": "AUD"}); st.rerun()
 
     # Other assets
     st.subheader(t("cash_other"))
@@ -599,18 +669,18 @@ def page_assets():
             CURRENCIES, index=CURRENCIES.index(o["currency"]), key=f"oc_{i}")
         o["name"] = c2.text_input(t("name"), o["name"], key=f"on_{i}")
         o["value"] = money_input(t("market_value"), o["value"], f"ov_{i}")
-        o["annual_return"] = c4.number_input("回报%", value=o.get("annual_return", 0.0),
+        o["annual_return"] = c4.number_input(t("return_pct"), value=o.get("annual_return", 0.0),
             step=0.5, format="%.1f", key=f"oar_{i}")
         if c5.button("✕", key=f"orm_{i}"):
             others_rm.append(i)
     for i in sorted(others_rm, reverse=True):
         d["other_assets"].pop(i); st.rerun()
     if st.button(t("add_asset")):
-        d["other_assets"].append({"name": "新资产", "value": 0, "currency": "AUD", "annual_return": 0.0}); st.rerun()
+        d["other_assets"].append({"name": t("new_asset"), "value": 0, "currency": "AUD", "annual_return": 0.0}); st.rerun()
     # Passive income summary
     passive = calc_passive_income(d)
     if passive > 0:
-        st.success(f"{t('passive_income')}: {fmt_cur(passive, 'AUD')}/年（自动计入退休规划）")
+        st.success(f"{t('passive_income')}: {fmt_cur(passive, 'AUD')}{t('passive_auto_note')}")
 
     # Summary
     st.divider()
@@ -622,7 +692,7 @@ def page_assets():
         if new_dc != dc: d["display_currency"] = new_dc; st.rerun()
     with c1:
         fx_str = " · ".join([f"AUD/{k} {v}" for k, v in fx.items()])
-        st.caption(f"汇率: {fx_str}")
+        st.caption(f"{t('fx_label')}: {fx_str}")
         st.markdown(f"### {t('total_assets')} {fmt_cur(total_a, dc)} − {t('total_liabilities')} {fmt_cur(total_l, dc)} = **{fmt_cur(nw, dc)}**")
     st.success(t("auto_saved"))
 
@@ -643,8 +713,8 @@ def page_cashflow():
             inc_rm.append(i)
     for i in sorted(inc_rm, reverse=True):
         d["income"].pop(i); st.rerun()
-    if st.button("＋ 添加收入"):
-        d["income"].append({"name": "新收入", "amount": 0, "currency": "AUD"}); st.rerun()
+    if st.button(t("add_income")):
+        d["income"].append({"name": t("new_income"), "amount": 0, "currency": "AUD"}); st.rerun()
 
     # Expenses
     st.subheader(t("expenses"))
@@ -661,30 +731,30 @@ def page_cashflow():
         if is_mortgage:
             c1.text_input(t("name"), exp["name"], key=f"en_{i}", disabled=True, label_visibility="collapsed")
             c2.text_input("annual", f"{total_annual_repay:,}", key=f"ea_m_{i}", disabled=True, label_visibility="collapsed")
-            c3.caption(f"月 {CUR_SYMBOLS.get(dc,'$')}{total_monthly_repay:,.0f} · 🔗自动")
+            c3.caption(f"{t('monthly')} {CUR_SYMBOLS.get(dc,'$')}{total_monthly_repay:,.0f} · {t('auto_link')}")
         else:
             exp["name"] = c1.text_input(t("name"), exp["name"], key=f"en_{i}", label_visibility="collapsed")
             exp["annual"] = money_input("", exp["annual"], f"ea_{i}", container=c2)
-            c3.caption(f"月 {CUR_SYMBOLS.get(dc,'$')}{exp['annual']/12:,.0f}")
+            c3.caption(f"{t('monthly')} {CUR_SYMBOLS.get(dc,'$')}{exp['annual']/12:,.0f}")
             if c4.button("✕", key=f"erm_{i}"):
                 exp_rm.append(i)
     for i in sorted(exp_rm, reverse=True):
         d["expenses"].pop(i); st.rerun()
-    if st.button("＋ 添加支出"):
-        d["expenses"].append({"name": "新支出", "annual": 0}); st.rerun()
+    if st.button(t("add_expense")):
+        d["expenses"].append({"name": t("new_expense"), "annual": 0}); st.rerun()
 
     # Summary
     st.divider()
     gross, tax, after_tax, total_exp, surplus = calc_cashflow(d)
     c1, c2, c3, c4 = st.columns(4)
     c1.metric(t("gross_income"), fmt_cur(gross, "AUD"))
-    c2.metric(t("after_tax"), fmt_cur(after_tax, "AUD"), f"税 {fmt_cur(tax, 'AUD')}")
+    c2.metric(t("after_tax"), fmt_cur(after_tax, "AUD"), f"{t('tax_label')} {fmt_cur(tax, 'AUD')}")
     c3.metric(t("total_expenses"), fmt_cur(total_exp, "AUD"))
     c4.metric(t("net_surplus"), fmt_cur(surplus, "AUD"),
         f"{t('savings_rate')} {surplus/after_tax*100:.0f}%" if after_tax > 0 else "—")
     # Waterfall
     st.subheader(t("waterfall"))
-    labels, values = [t("gross_income"), "税/Tax"], [gross, -tax]
+    labels, values = [t("gross_income"), t("tax_label")], [gross, -tax]
     for e in d["expenses"]:
         if e["annual"] > 0: labels.append(e["name"]); values.append(-e["annual"])
     labels.append(t("net_surplus")); values.append(surplus)
@@ -707,20 +777,20 @@ def page_retirement():
     r["target_age"] = c2.number_input(t("target_retire_age"), value=r["target_age"], min_value=40, max_value=80, key="r_ta")
     r["life_expectancy"] = c3.number_input(t("life_expectancy"), value=r["life_expectancy"], min_value=70, max_value=110, key="r_le")
     r["real_return"] = c4.number_input(t("real_return"), value=r["real_return"], step=0.5, format="%.1f", key="r_rr")
-    st.subheader("🏠 " + ("生活方式设置" if st.session_state.lang == "zh" else "Lifestyle Settings"))
+    st.subheader(t("lifestyle_settings"))
     c1, c2 = st.columns(2)
     with c1:
         r["months_au"] = st.number_input(t("months_au"), value=r["months_au"], min_value=0, max_value=12, key="r_mau")
-        r["au_cost"] = money_input(t("au_cost"), r["au_cost"], "r_auc")
+        r["au_cost"] = money_input(t("au_cost_aud"), r["au_cost"], "r_auc")
         r["biz_class_trips"] = st.number_input(t("biz_class_trips"), value=r["biz_class_trips"], min_value=0, max_value=12, key="r_bct")
     with c2:
         r["months_cn"] = st.number_input(t("months_cn"), value=r["months_cn"], min_value=0, max_value=12, key="r_mcn")
-        r["cn_cost"] = money_input(t("cn_cost"), r["cn_cost"], "r_cnc")
-        r["ticket_price"] = money_input(t("ticket_price"), r["ticket_price"], "r_tp")
+        r["cn_cost"] = money_input(t("cn_cost_aud"), r["cn_cost"], "r_cnc")
+        r["ticket_price"] = money_input(t("ticket_aud"), r["ticket_price"], "r_tp")
     c1, c2, c3 = st.columns(3)
-    r["health_ins"] = money_input(t("health_ins"), r["health_ins"], "r_hi")
-    r["annual_contrib"] = money_input(t("annual_contrib"), r["annual_contrib"], "r_ac")
-    r["current_super"] = money_input("当前 Super Fund 总值", r["current_super"], "r_cs")
+    r["health_ins"] = money_input(t("health_ins_aud"), r["health_ins"], "r_hi")
+    r["annual_contrib"] = money_input(t("contrib_aud"), r["annual_contrib"], "r_ac")
+    r["current_super"] = money_input(t("current_super_total"), r["current_super"], "r_cs")
     # Calculate
     acc, draw, cap_retire, annual_exp, deplete_age, passive = project_retirement(d)
     needed = annual_exp * 25
@@ -731,35 +801,35 @@ def page_retirement():
     c2.metric(t("capital_needed_4pct"), fmt_cur(needed, dc))
     c3.metric(t("capital_at_retire"), fmt_cur(cap_retire, dc))
     gap = cap_retire - needed
-    c4.metric(t("retirement_gap"), fmt_cur(gap, dc), "✅ 超额" if gap >= 0 else "⚠️ 不足")
+    c4.metric(t("retirement_gap"), fmt_cur(gap, dc), t("surplus_ok") if gap >= 0 else t("shortfall"))
     if passive > 0:
-        st.info(f"被动收入 {fmt_cur(passive, 'AUD')}/年 → 实际净提取 {fmt_cur(net_withdrawal, 'AUD')}/年（提取率 {net_withdrawal/cap_retire*100:.1f}%）" if cap_retire > 0 else "")
+        st.info(t("passive_retire_note").format(p=fmt_cur(passive, "AUD"), w=fmt_cur(net_withdrawal, "AUD"), r=f"{net_withdrawal/cap_retire*100:.1f}")) if cap_retire > 0 else None
     # Chart
     st.subheader(t("projection"))
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=list(range(r["current_age"], r["target_age"]+1)), y=acc, mode="lines+markers",
-        name="累积阶段", line=dict(color="#3fb950", width=2.5), marker=dict(size=3)))
+        name=t("accumulation"), line=dict(color="#3fb950", width=2.5), marker=dict(size=3)))
     fig.add_trace(go.Scatter(x=list(range(r["target_age"], r["life_expectancy"]+1)), y=draw, mode="lines+markers",
-        name="提取阶段", line=dict(color="#f85149", width=2.5), marker=dict(size=3)))
-    fig.add_hline(y=needed, line_dash="dot", line_color="#4da6ff", annotation_text="4% 法则线")
+        name=t("drawdown"), line=dict(color="#f85149", width=2.5), marker=dict(size=3)))
+    fig.add_hline(y=needed, line_dash="dot", line_color="#4da6ff", annotation_text="4% Rule Line")
     fig.add_hline(y=0, line_dash="dash", line_color="rgba(255,255,255,0.3)")
-    fig.update_layout(**PLOTLY_LAYOUT, height=400, xaxis_title="年龄", yaxis_title=f"本金 ({dc})")
+    fig.update_layout(**PLOTLY_LAYOUT, height=400, xaxis_title=t("age"), yaxis_title=f"{t('capital')} ({dc})")
     st.plotly_chart(fig, use_container_width=True)
     # Sensitivity
     st.subheader(t("sensitivity"))
     scenarios = []
-    for label, ret in [("保守 2.5%", 2.5), ("基准 3.5%", 3.5), ("乐观 4.5%", 4.5)]:
+    for label, ret in [(t("conservative"), 2.5), (t("baseline"), 3.5), (t("optimistic"), 4.5)]:
         old = r["real_return"]; r["real_return"] = ret
         _, _, cr, ae, da, _ = project_retirement(d); r["real_return"] = old
-        lasts = f"{da}岁" if da <= r["life_expectancy"] else f">{r['life_expectancy']}岁"
-        scenarios.append({"情景": label, "退休时本金": fmt_cur(cr, dc), "能撑到": lasts,
-            "状态": "✅" if da > r["life_expectancy"] else ("⚠️" if da > r["life_expectancy"]-5 else "❌")})
+        lasts = f"{da}{t('age_suffix')}" if da <= r["life_expectancy"] else f">{r['life_expectancy']}{t('age_suffix')}"
+        scenarios.append({t("scenario"): label, t("capital_at_retire"): fmt_cur(cr, dc), t("lasts_until"): lasts,
+            t("status"): "✅" if da > r["life_expectancy"] else ("⚠️" if da > r["life_expectancy"]-5 else "❌")})
     st.dataframe(scenarios, use_container_width=True, hide_index=True)
     if gap >= 0:
-        st.success(f"💡 基准情景下目标可达。商务舱预算 (~{fmt_cur(r['biz_class_trips']*r['ticket_price']*2, dc)}/年) 是天然安全阀。")
+        st.success(t("suggest_ok").format(cost=fmt_cur(r["biz_class_trips"]*r["ticket_price"]*2, dc)))
     else:
         extra = abs(gap) / max(r["target_age"] - r["current_age"], 1)
-        st.warning(f"💡 需额外每年供款约 {fmt_cur(extra, dc)} 或推迟退休 2–3 年。")
+        st.warning(t("suggest_gap").format(extra=fmt_cur(extra, dc)))
 
 
 def page_super():
@@ -778,14 +848,14 @@ def page_super():
     c1, c2 = st.columns(2)
     with c1:
         st.markdown(f"**{so['m1_name']}**")
-        so["m1_balance"] = money_input(t("super_balance"), so["m1_balance"], "so_m1b")
-        so["m1_sg"] = money_input(t("sg_received"), so["m1_sg"], "so_m1sg")
-        so["m1_income"] = money_input(t("personal_income"), so["m1_income"], "so_m1i")
+        so["m1_balance"] = money_input(t("super_bal_aud"), so["m1_balance"], "so_m1b")
+        so["m1_sg"] = money_input(t("sg_aud"), so["m1_sg"], "so_m1sg")
+        so["m1_income"] = money_input(t("income_aud"), so["m1_income"], "so_m1i")
     with c2:
         st.markdown(f"**{so['m2_name']}**")
-        so["m2_balance"] = money_input(t("super_balance"), so["m2_balance"], "so_m2b")
-        so["m2_sg"] = money_input(t("sg_received"), so["m2_sg"], "so_m2sg")
-        so["m2_income"] = money_input(t("personal_income"), so["m2_income"], "so_m2i")
+        so["m2_balance"] = money_input(t("super_bal_aud"), so["m2_balance"], "so_m2b")
+        so["m2_sg"] = money_input(t("sg_aud"), so["m2_sg"], "so_m2sg")
+        so["m2_income"] = money_input(t("income_aud"), so["m2_income"], "so_m2i")
     CC_CAP, NCC_CAP, NCC_BF = 30000, 120000, 360000
     st.divider()
     results = []
@@ -810,9 +880,9 @@ def page_super():
     for name, inc, sg in [(so["m1_name"],so["m1_income"],so["m1_sg"]),(so["m2_name"],so["m2_income"],so["m2_sg"])]:
         th = inc + CC_CAP
         if th > 250000 and inc > 0:
-            st.warning(f"⚠️ {name}: 收入+CC=${th:,.0f} 超$250k → Division 293 额外15%。但总税率30%仍远低于边际税率。")
+            st.warning(t("div293_over").format(name=name, th=th))
         elif inc > 0:
-            st.info(f"ℹ️ {name}: 距 Division 293 阈值还有 ${250000-th:,.0f} 空间。")
+            st.info(t("div293_room").format(name=name, room=250000-th))
 
 
 def page_monte_carlo():
@@ -828,7 +898,7 @@ def page_monte_carlo():
     mc["inflation"] = c3.number_input(t("inflation"), value=mc["inflation"], step=0.5, format="%.1f", key="mc_inf")
     mc["num_sims"] = st.slider(t("num_sims"), 1000, 20000, mc["num_sims"], 1000, key="mc_ns")
     if st.button(t("run_sim"), type="primary"):
-        with st.spinner("运行模拟中..."):
+        with st.spinner("⏳"):
             st.session_state.mc_result = run_monte_carlo(mc)
     if "mc_result" in st.session_state:
         result = st.session_state.mc_result
@@ -849,15 +919,15 @@ def page_monte_carlo():
         fig.add_trace(go.Scatter(x=years, y=result["p50"].tolist(), mode="lines",
             line=dict(color="#4da6ff", width=2.5), name="P50"))
         fig.add_hline(y=0, line_dash="dash", line_color="rgba(248,81,73,0.5)")
-        fig.update_layout(**PLOTLY_LAYOUT, height=400, xaxis_title="退休后年数", yaxis_title="AUD")
+        fig.update_layout(**PLOTLY_LAYOUT, height=400, xaxis_title=t("years_after_retire"), yaxis_title="AUD")
         st.plotly_chart(fig, use_container_width=True)
         # Stress test
         st.subheader(t("stress_test"))
         sa = d["retirement"].get("target_age", 60)
         mca = {**mc, "start_age": sa}
         rows = []
-        for label, cy, cash in [("无崩盘", None, 0), ("退休第1年崩盘", 0, 0), ("退休第5年崩盘", 4, 0),
-                ("退休第10年崩盘", 9, 0), (f"第1年崩盘+现金桶", 0, mc["annual_withdrawal"]*2)]:
+        for label, cy, cash in [(t("no_crash"), None, 0), (t("crash_yr1"), 0, 0), (t("crash_yr5"), 4, 0),
+                (t("crash_yr10"), 9, 0), (t("crash_bucket"), 0, mc["annual_withdrawal"]*2)]:
             if cy is None:
                 real_r = ((1+mc["nominal_return"]/100)/(1+mc["inflation"]/100))-1
                 b = mc["initial_capital"]
@@ -866,18 +936,18 @@ def page_monte_carlo():
                     b = b*(1+real_r)-mc["annual_withdrawal"]
                     if b <= 0: age = sa+y+1; break
                 rows.append({t("scenario"):label,t("crash_year"):"—",t("crash_size"):"—",t("recovery"):"—",
-                    t("lasts_until"):f"{'>' if b>0 else ''}{age}岁",t("status"):"✅" if b>0 else "⚠️"})
+                    t("lasts_until"):f"{'>' if b>0 else ''}{age}{t('age_suffix')}",t("status"):"✅" if b>0 else "⚠️"})
             else:
                 eb, ea = stress_test_sequence(mca, cy, cash_bucket=cash)
-                rows.append({t("scenario"):label,t("crash_year"):f"{sa+cy}岁",t("crash_size"):"-35%",t("recovery"):"3年",
-                    t("lasts_until"):f"{'>' if eb>0 else ''}{ea}岁",t("status"):"✅" if eb>0 else "❌"})
+                rows.append({t("scenario"):label,t("crash_year"):f"{sa+cy}{t('age_suffix')}",t("crash_size"):"-35%",t("recovery"):"3yr",
+                    t("lasts_until"):f"{'>' if eb>0 else ''}{ea}{t('age_suffix')}",t("status"):"✅" if eb>0 else "❌"})
         st.dataframe(rows, use_container_width=True, hide_index=True)
         if sr >= 0.9:
-            st.success(f"🎲 {sr*100:.0f}% 成功率。建议保留 2 年现金桶 ({fmt_cur(mc['annual_withdrawal']*2,'AUD')}) 应对 sequence risk。")
+            st.success(t("mc_ok").format(sr=sr*100, bucket=fmt_cur(mc["annual_withdrawal"]*2,"AUD")))
         elif sr >= 0.8:
-            st.warning(f"🎲 {sr*100:.0f}% 成功率，略有风险。可降低提取或增加本金 10-15%。")
+            st.warning(t("mc_warn").format(sr=sr*100))
         else:
-            st.error(f"🎲 {sr*100:.0f}% 成功率偏低。建议降提取/增本金/推迟退休。")
+            st.error(t("mc_bad").format(sr=sr*100))
 
 
 def page_currency():
@@ -885,16 +955,16 @@ def page_currency():
     st.subheader(t("fx_rates"))
     cb, cs = st.columns([1, 3])
     with cb:
-        if st.button("🔄 " + ("获取实时汇率" if st.session_state.lang == "zh" else "Fetch Live Rates"), type="primary"):
+        if st.button(t("fetch_fx"), type="primary"):
             _fetch_fx_cached.clear()
             live = fetch_live_fx()
             if live: fx.update(live); st.session_state._fx_ok = True; st.rerun()
             else: st.session_state._fx_err = True
     with cs:
         if st.session_state.pop("_fx_ok", None):
-            st.success("✅ 汇率已更新（Yahoo Finance）")
+            st.success(t("fx_updated"))
         if st.session_state.pop("_fx_err", None):
-            st.error("❌ 获取失败，请手动输入")
+            st.error(t("fx_error"))
     c1, c2, c3 = st.columns(3)
     fx["USD"] = c1.number_input("AUD/USD", value=fx["USD"], step=0.005, format="%.4f", key="fx_usd")
     fx["CNY"] = c2.number_input("AUD/CNY", value=fx["CNY"], step=0.01, format="%.2f", key="fx_cny")
@@ -917,10 +987,10 @@ def page_currency():
         ed, cd = ea-base_etf, ca-cn_cost
         rows.append({t("scenario"):label,"AUD/USD":f"{ur:.3f}","AUD/CNY":f"{cr:.2f}",
             t("us_etf_aud"):fmt_cur(ea,"AUD"),t("cn_cost_aud"):fmt_cur(ca,"AUD"),
-            t("net_impact"): "基准" if label==t("current") else f"{'+' if ed-abs(cd)>=0 else ''}{fmt_cur(ed-abs(cd),'AUD')}"})
+            t("net_impact"): t("baseline_label") if label==t("current") else f"{'+' if ed-abs(cd)>=0 else ''}{fmt_cur(ed-abs(cd),'AUD')}"})
     st.dataframe(rows, use_container_width=True, hide_index=True)
     if us_etf_usd > 0:
-        st.info("💱 天然对冲：AUD贬→美股更值钱(+)，但中国开支更贵(−)。净敞口偏「喜欢弱AUD」。无需额外FX对冲。")
+        st.info(t("fx_hedge_tip"))
 
 
 def page_settings():
@@ -939,7 +1009,7 @@ def page_settings():
     st.divider()
     st.subheader(t("data_mgmt"))
     st.success(t("auto_save_on"))
-    st.caption("🖥️ 本地：自动写入 wealth_data.json\n\n☁️ Cloud：自动存入浏览器 localStorage，刷新不丢失")
+    st.caption(t("persistence_note"))
     c1, c2, c3 = st.columns(3)
     with c1:
         st.download_button(t("export_data"), json.dumps(d, ensure_ascii=False, indent=2),
@@ -955,9 +1025,9 @@ def page_settings():
                 for k in list(st.session_state.keys()):
                     if k.startswith(("pv_","pm_","sv_","ov_","ia_","ea_","so_","mc_","r_")):
                         del st.session_state[k]
-                save_data(); st.success("✅ 导入成功！"); st.rerun()
+                save_data(); st.success(t("import_ok")); st.rerun()
             except Exception as e:
-                st.error(f"导入失败: {e}")
+                st.error(f"{t('import_fail')}: {e}")
     with c3:
         if st.button(t("reset_data")):
             st.session_state.data = get_default_data()
@@ -970,8 +1040,7 @@ def page_settings():
     # Git push
     st.divider()
     st.subheader(t("git_update"))
-    st.caption("将代码推送到 Git 仓库（wealth_data.json 不会被推送，数据安全）" if st.session_state.lang == "zh"
-        else "Push code to Git repo (wealth_data.json is gitignored, data stays safe)")
+    st.caption(t("git_caption"))
     commit_msg = st.text_input("Commit message", value=f"Update {datetime.now().strftime('%Y-%m-%d %H:%M')}", key="git_msg")
     if st.button(t("git_update"), type="primary", key="git_btn"):
         try:
@@ -979,14 +1048,14 @@ def page_settings():
             r2 = subprocess.run(["git", "commit", "-m", commit_msg], capture_output=True, text=True, timeout=30)
             r3 = subprocess.run(["git", "push"], capture_output=True, text=True, timeout=60)
             if r3.returncode == 0:
-                st.success("✅ 推送成功！Streamlit Cloud 将自动重新部署。")
+                st.success(t("git_push_ok"))
             else:
-                st.error(f"推送失败: {r3.stderr}")
+                st.error(f"{t('git_push_fail')}: {r3.stderr}")
                 st.code(r1.stdout + r2.stdout + r3.stdout)
         except FileNotFoundError:
-            st.error("未找到 git 命令。请确保已安装 Git 并在项目目录中运行。")
+            st.error(t("git_no_git"))
         except Exception as e:
-            st.error(f"错误: {e}")
+            st.error(f"{t('error_label')}: {e}")
 
     # Logout
     st.divider()
@@ -995,8 +1064,7 @@ def page_settings():
 
     st.divider()
     st.subheader(t("about"))
-    st.caption("Wealth Manager v1.0 · 仅供个人财务规划参考，不构成理财或税务建议。\n\n"
-        "Built with Streamlit + Plotly · 数据存储在本地。澳洲税率/Super 规则基于 2025-26 财年。")
+    st.caption(t("about_text"))
 
 
 # ================================================================
@@ -1022,7 +1090,7 @@ def main():
         sel = st.radio("Nav", list(pages.keys()), label_visibility="collapsed")
         active = pages[sel]
         st.divider()
-        st.caption("⚠️ " + ("仅供参考，不构成理财建议" if st.session_state.lang == "zh" else "Not financial advice"))
+        st.caption("⚠️ " + t("not_financial_advice"))
         st.caption(f"💾 {t('auto_saved')}")
     {"dashboard": page_dashboard, "assets": page_assets, "cashflow": page_cashflow,
      "retirement": page_retirement, "super": page_super, "monte": page_monte_carlo,
