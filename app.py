@@ -470,7 +470,6 @@ def check_password():
             st.rerun()
         else:
             st.error(t("login_error"))
-    st.caption("Default: hello1234")
     st.markdown("</div>", unsafe_allow_html=True)
     return False
 
@@ -483,13 +482,24 @@ def page_dashboard():
     gross, tax, after_tax, total_exp, surplus = calc_cashflow(d)
     acc, draw, cap_retire, annual_exp_ret, deplete_age, passive = project_retirement(d)
     dc = d["display_currency"]
+    fx = d["fx_rates"]
+
+    # Net worth in all currencies
+    # nw is in display_currency; convert to AUD first, then to all
+    nw_aud = to_aud(nw, dc, fx) if dc != "AUD" else nw
+    st.subheader(t("net_worth"))
     c1, c2, c3, c4 = st.columns(4)
-    c1.metric(t("net_worth"), fmt_cur(nw, dc))
-    c2.metric(t("annual_cashflow"), fmt_cur(surplus, dc), f"{surplus/after_tax*100:.0f}%" if after_tax > 0 else "—")
+    c1.metric("🇦🇺 AUD", fmt_cur(nw_aud, "AUD"))
+    c2.metric("🇺🇸 USD", fmt_cur(nw_aud * fx.get("USD", 0.645), "USD"))
+    c3.metric("🇨🇳 CNY", fmt_cur(nw_aud * fx.get("CNY", 4.72), "CNY"))
+    c4.metric("🇭🇰 HKD", fmt_cur(nw_aud * fx.get("HKD", 5.04), "HKD"))
+
+    c1, c2, c3 = st.columns(3)
+    c1.metric(t("annual_cashflow"), fmt_cur(surplus, "AUD"), f"{surplus/after_tax*100:.0f}%" if after_tax > 0 else "—")
     needed = annual_exp_ret * 25
     gap = cap_retire - needed
-    c3.metric(t("retirement_gap"), fmt_cur(gap, dc), "✅" if gap >= 0 else "⚠️")
-    c4.metric(t("retire_age"), f"{d['retirement']['target_age']}", "✅" if gap >= 0 else "需增加供款")
+    c2.metric(t("retirement_gap"), fmt_cur(gap, "AUD"), "✅" if gap >= 0 else "⚠️")
+    c3.metric(t("retire_age"), f"{d['retirement']['target_age']}", "✅" if gap >= 0 else "需增加供款")
     if passive > 0:
         st.info(f"💰 {t('passive_income')}: {fmt_cur(passive, 'AUD')} (退休时抵减提取额)" if st.session_state.lang == "zh"
             else f"💰 {t('passive_income')}: {fmt_cur(passive, 'AUD')} (offsets retirement withdrawals)")
