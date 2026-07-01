@@ -623,11 +623,11 @@ def page_cashflow():
     st.subheader(t("income"))
     inc_rm = []
     for i, inc in enumerate(d["income"]):
-        c1, c2, c3, c4 = st.columns([1, 3, 2, 0.5])
+        c1, c2, c3, c4 = st.columns([1, 4, 3, 0.6])
         inc["currency"] = c1.selectbox(f"{CUR_FLAGS.get(inc['currency'],'')}",
-            CURRENCIES, index=CURRENCIES.index(inc["currency"]), key=f"ic_{i}")
-        inc["name"] = c2.text_input(t("name"), inc["name"], key=f"in_{i}")
-        inc["amount"] = money_input(t("amount_annual"), inc["amount"], f"ia_{i}")
+            CURRENCIES, index=CURRENCIES.index(inc["currency"]), key=f"ic_{i}", label_visibility="collapsed")
+        inc["name"] = c2.text_input(t("name"), inc["name"], key=f"in_{i}", label_visibility="collapsed")
+        inc["amount"] = money_input("", inc["amount"], f"ia_{i}")
         if c4.button("✕", key=f"irm_{i}"):
             inc_rm.append(i)
     for i in sorted(inc_rm, reverse=True):
@@ -640,7 +640,6 @@ def page_cashflow():
     # Auto-calculate total annual mortgage from properties
     total_monthly_repay = sum(p.get("monthly_repay", 0) for p in d["properties"])
     total_annual_repay = round(total_monthly_repay * 12)
-    # Auto-update the mortgage expense item
     for exp in d["expenses"]:
         if "房贷" in exp["name"] or "mortgage" in exp["name"].lower():
             exp["annual"] = total_annual_repay
@@ -648,16 +647,15 @@ def page_cashflow():
     for i, exp in enumerate(d["expenses"]):
         is_mortgage = "房贷" in exp["name"] or "mortgage" in exp["name"].lower()
         if is_mortgage:
-            c1, c2, c3, c4 = st.columns([3, 2, 1, 0.5])
-            c1.text_input(t("name"), exp["name"], key=f"en_{i}", disabled=True)
-            c2.metric("", f"{total_annual_repay:,}")
-            c3.caption(f"月均 {CUR_SYMBOLS.get(dc,'$')}{total_monthly_repay:,.0f}")
-            c4.caption("🔗 自动" if st.session_state.lang == "zh" else "🔗 Auto")
+            c1, c2, c3, c4 = st.columns([4, 3, 2, 0.6])
+            c1.text_input(t("name"), exp["name"], key=f"en_{i}", disabled=True, label_visibility="collapsed")
+            c2.text_input("annual", f"{total_annual_repay:,}", key=f"ea_m_{i}", disabled=True, label_visibility="collapsed")
+            c3.caption(f"月 {CUR_SYMBOLS.get(dc,'$')}{total_monthly_repay:,.0f} · 🔗自动")
         else:
-            c1, c2, c3, c4 = st.columns([3, 2, 1, 0.5])
-            exp["name"] = c1.text_input(t("name"), exp["name"], key=f"en_{i}")
-            exp["annual"] = money_input(t("amount_annual"), exp["annual"], f"ea_{i}")
-            c3.caption(f"月均 {CUR_SYMBOLS.get(dc,'$')}{exp['annual']/12:,.0f}")
+            c1, c2, c3, c4 = st.columns([4, 3, 2, 0.6])
+            exp["name"] = c1.text_input(t("name"), exp["name"], key=f"en_{i}", label_visibility="collapsed")
+            exp["annual"] = money_input("", exp["annual"], f"ea_{i}")
+            c3.caption(f"月 {CUR_SYMBOLS.get(dc,'$')}{exp['annual']/12:,.0f}")
             if c4.button("✕", key=f"erm_{i}"):
                 exp_rm.append(i)
     for i in sorted(exp_rm, reverse=True):
