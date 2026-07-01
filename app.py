@@ -850,21 +850,46 @@ def page_super():
         c3.metric(t("sf_liquid"), fmt_cur(liquid, "AUD"))
     st.subheader(t("concessional"))
     c1, c2 = st.columns(2)
+    # Auto-pull income from Cash Flow
+    incomes = d.get("income", [])
+    fx = d["fx_rates"]
+    m1_income = to_aud(incomes[0]["amount"], incomes[0]["currency"], fx) if len(incomes) > 0 else 0
+    m2_income = to_aud(incomes[1]["amount"], incomes[1]["currency"], fx) if len(incomes) > 1 else 0
+    SG_RATE = 0.115  # 11.5% for FY2025-26
+
     with c1:
         st.markdown(f"**{so['m1_name']}**")
         so["m1_balance"] = money_input(t("super_bal_aud"), so["m1_balance"], "so_m1b")
-        so["m1_sg"] = money_input(t("sg_aud"), so["m1_sg"], "so_m1sg")
-        so["m1_income"] = money_input(t("income_aud"), so["m1_income"], "so_m1i")
+        so.setdefault("m1_self_employed", True)
+        so["m1_self_employed"] = st.checkbox(
+            "自雇 (无SG)" if st.session_state.lang == "zh" else "Self-employed (no SG)",
+            value=so["m1_self_employed"], key="so_m1se")
+        m1_sg = 0 if so["m1_self_employed"] else round(m1_income * SG_RATE)
+        so["m1_sg"] = m1_sg
+        so["m1_income"] = m1_income
+        if len(incomes) > 0:
+            st.caption(f"🔗 {incomes[0]['name']}: A${m1_income:,.0f}")
+            st.caption(f"SG: A${m1_sg:,.0f}" + (" (自雇=0)" if so["m1_self_employed"] else f" ({SG_RATE*100:.1f}%)"))
+
     with c2:
         st.markdown(f"**{so['m2_name']}**")
         so["m2_balance"] = money_input(t("super_bal_aud"), so["m2_balance"], "so_m2b")
-        so["m2_sg"] = money_input(t("sg_aud"), so["m2_sg"], "so_m2sg")
-        so["m2_income"] = money_input(t("income_aud"), so["m2_income"], "so_m2i")
+        so.setdefault("m2_self_employed", False)
+        so["m2_self_employed"] = st.checkbox(
+            "自雇 (无SG)" if st.session_state.lang == "zh" else "Self-employed (no SG)",
+            value=so["m2_self_employed"], key="so_m2se")
+        m2_sg = 0 if so["m2_self_employed"] else round(m2_income * SG_RATE)
+        so["m2_sg"] = m2_sg
+        so["m2_income"] = m2_income
+        if len(incomes) > 1:
+            st.caption(f"🔗 {incomes[1]['name']}: A${m2_income:,.0f}")
+            st.caption(f"SG: A${m2_sg:,.0f}" + (" (自雇=0)" if so["m2_self_employed"] else f" ({SG_RATE*100:.1f}%)"))
+
     CC_CAP, NCC_CAP, NCC_BF = 30000, 120000, 360000
     st.divider()
     results = []
-    for name, bal, sg, inc in [(so["m1_name"],so["m1_balance"],so["m1_sg"],so["m1_income"]),
-                                (so["m2_name"],so["m2_balance"],so["m2_sg"],so["m2_income"])]:
+    for name, bal, sg, inc in [(so["m1_name"],so["m1_balance"],m1_sg,m1_income),
+                                (so["m2_name"],so["m2_balance"],m2_sg,m2_income)]:
         room = max(CC_CAP - sg, 0)
         can_cf = bal < 500000
         cf_est = min(5 * CC_CAP - sg, 5 * CC_CAP) if can_cf else 0
@@ -881,7 +906,7 @@ def page_super():
         ncc_r.append({t("member"):name, t("ncc_annual"):f"${NCC_CAP:,}", t("bring_forward"):f"${NCC_BF:,}",
             t("eligible"): "✅" if bal < 1900000 else "❌ >$1.9M"})
     st.dataframe(ncc_r, use_container_width=True, hide_index=True)
-    for name, inc, sg in [(so["m1_name"],so["m1_income"],so["m1_sg"]),(so["m2_name"],so["m2_income"],so["m2_sg"])]:
+    for name, inc, sg in [(so["m1_name"],m1_income,m1_sg),(so["m2_name"],m2_income,m2_sg)]:
         th = inc + CC_CAP
         if th > 250000 and inc > 0:
             st.warning(t("div293_over").format(name=name, th=th))
@@ -891,11 +916,21 @@ def page_super():
 
 def page_monte_carlo():
     d = st.session_state.data; mc = d["monte_carlo"]
+
+    # Auto-pull from retirement projection
+    acc, draw, cap_retire, annual_exp, deplete_age, passive = project_retirement(d)
+    net_withdrawal = max(annual_exp - passive, 0)
+    mc["initial_capital"] = round(cap_retire)
+    mc["annual_withdrawal"] = round(net_withdrawal)
+    mc["years"] = d["retirement"]["life_expectancy"] - d["retirement"]["target_age"]
+
     st.subheader(t("mc_params"))
     c1, c2, c3 = st.columns(3)
-    mc["initial_capital"] = money_input(t("initial_capital"), mc["initial_capital"], "mc_ic")
-    mc["annual_withdrawal"] = money_input(t("annual_withdrawal"), mc["annual_withdrawal"], "mc_aw")
-    mc["years"] = c3.number_input(t("sim_years"), value=mc["years"], min_value=10, max_value=50, key="mc_yr")
+    c1.metric(t("initial_capital"), f"A${mc['initial_capital']:,}")
+    c2.metric(t("annual_withdrawal"), f"A${mc['annual_withdrawal']:,}")
+    c3.metric(t("sim_years"), f"{mc['years']}")
+    st.caption("🔗 " + ("以上三项自动从退休规划页联动" if st.session_state.lang == "zh" else "Above 3 values auto-linked from Retirement page"))
+
     c1, c2, c3 = st.columns(3)
     mc["nominal_return"] = c1.number_input(t("nominal_return"), value=mc["nominal_return"], step=0.5, format="%.1f", key="mc_nr")
     mc["volatility"] = c2.number_input(t("volatility"), value=mc["volatility"], step=1.0, format="%.1f", key="mc_vol")
