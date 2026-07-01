@@ -202,7 +202,7 @@ TR = {
     "about_text": {"zh": "Wealth Manager v1.0 · 仅供个人财务规划参考，不构成理财或税务建议。\n\nBuilt with Streamlit + Plotly · 数据存储在本地。澳洲税率/Super 规则基于 2025-26 财年。", "en": "Wealth Manager v1.0 · For personal planning only, not financial advice.\n\nBuilt with Streamlit + Plotly · Data stored locally. AU tax/super rules based on FY2025-26."},
     "not_financial_advice": {"zh": "仅供参考，不构成理财建议", "en": "Not financial advice"},
     "au_cost_aud": {"zh": "澳洲期间年开支 (AUD)", "en": "Australia Annual Cost (AUD)"},
-    "cn_cost_aud": {"zh": "中国期间年开支 (AUD)", "en": "China Annual Cost (AUD)"},
+    "cn_cost_aud": {"zh": "中国期间年开支 (CNY)", "en": "China Annual Cost (CNY)"},
     "ticket_aud": {"zh": "人均往返票价 (AUD)", "en": "Ticket Price per person RT (AUD)"},
     "health_ins_aud": {"zh": "国际医疗险/年 (AUD)", "en": "Int\'l Health Insurance/yr (AUD)"},
     "contrib_aud": {"zh": "年供款 (AUD)", "en": "Annual Contribution (AUD)"},
@@ -300,7 +300,7 @@ def get_default_data():
         "retirement": {
             "current_age": 45, "target_age": 60, "life_expectancy": 90,
             "months_au": 6, "months_cn": 6,
-            "au_cost": 46000, "cn_cost": 12000,
+            "au_cost": 46000, "cn_cost": 56000,
             "biz_class_trips": 3, "ticket_price": 4200,
             "health_ins": 4000, "real_return": 3.5,
             "annual_contrib": 60000, "current_super": 870000,
@@ -465,7 +465,7 @@ def project_retirement(d):
     years_to = r["target_age"] - r["current_age"]
     years_in = r["life_expectancy"] - r["target_age"]
     ret_return = r["real_return"] / 100
-    annual_exp = r["au_cost"] + r["cn_cost"] + r["biz_class_trips"] * r["ticket_price"] * 2 + r["health_ins"]
+    annual_exp = r["au_cost"] + to_aud(r["cn_cost"], "CNY", fx) + r["biz_class_trips"] * r["ticket_price"] * 2 + r["health_ins"]
     passive = calc_passive_income(d)
     # Total investable = super + other assets (in AUD)
     other_total = sum(to_aud(o["value"], o["currency"], fx) for o in d["other_assets"])
@@ -786,6 +786,8 @@ def page_retirement():
     with c2:
         r["months_cn"] = st.number_input(t("months_cn"), value=r["months_cn"], min_value=0, max_value=12, key="r_mcn")
         r["cn_cost"] = money_input(t("cn_cost_aud"), r["cn_cost"], "r_cnc")
+        cn_in_aud = to_aud(r["cn_cost"], "CNY", d["fx_rates"])
+        st.caption(f"= A${cn_in_aud:,.0f} (AUD/CNY {d['fx_rates'].get('CNY', 4.72)})")
         r["ticket_price"] = money_input(t("ticket_aud"), r["ticket_price"], "r_tp")
     c1, c2, c3 = st.columns(3)
     r["health_ins"] = money_input(t("health_ins_aud"), r["health_ins"], "r_hi")
