@@ -154,8 +154,9 @@ def t(key):
 # ================================================================
 # UI HELPERS
 # ================================================================
-def money_input(label, value, key):
+def money_input(label, value, key, container=None):
     """Text input with comma-separated thousands display"""
+    ctx = container or st
     if key not in st.session_state:
         st.session_state[key] = f"{int(value):,}" if value else "0"
     def _reformat():
@@ -165,7 +166,7 @@ def money_input(label, value, key):
             st.session_state[key] = f"{num:,}"
         except:
             pass
-    st.text_input(label, key=key, on_change=_reformat)
+    ctx.text_input(label, key=key, on_change=_reformat, label_visibility="collapsed" if not label else "visible")
     try:
         return max(int(float(st.session_state.get(key, "0").replace(",", "").replace(" ", ""))), 0)
     except:
@@ -637,7 +638,7 @@ def page_cashflow():
         inc["currency"] = c1.selectbox(f"{CUR_FLAGS.get(inc['currency'],'')}",
             CURRENCIES, index=CURRENCIES.index(inc["currency"]), key=f"ic_{i}", label_visibility="collapsed")
         inc["name"] = c2.text_input(t("name"), inc["name"], key=f"in_{i}", label_visibility="collapsed")
-        inc["amount"] = money_input("", inc["amount"], f"ia_{i}")
+        inc["amount"] = money_input("", inc["amount"], f"ia_{i}", container=c3)
         if c4.button("✕", key=f"irm_{i}"):
             inc_rm.append(i)
     for i in sorted(inc_rm, reverse=True):
@@ -656,15 +657,14 @@ def page_cashflow():
     exp_rm = []
     for i, exp in enumerate(d["expenses"]):
         is_mortgage = "房贷" in exp["name"] or "mortgage" in exp["name"].lower()
+        c1, c2, c3, c4 = st.columns([4, 3, 2, 0.6])
         if is_mortgage:
-            c1, c2, c3, c4 = st.columns([4, 3, 2, 0.6])
             c1.text_input(t("name"), exp["name"], key=f"en_{i}", disabled=True, label_visibility="collapsed")
             c2.text_input("annual", f"{total_annual_repay:,}", key=f"ea_m_{i}", disabled=True, label_visibility="collapsed")
             c3.caption(f"月 {CUR_SYMBOLS.get(dc,'$')}{total_monthly_repay:,.0f} · 🔗自动")
         else:
-            c1, c2, c3, c4 = st.columns([4, 3, 2, 0.6])
             exp["name"] = c1.text_input(t("name"), exp["name"], key=f"en_{i}", label_visibility="collapsed")
-            exp["annual"] = money_input("", exp["annual"], f"ea_{i}")
+            exp["annual"] = money_input("", exp["annual"], f"ea_{i}", container=c2)
             c3.caption(f"月 {CUR_SYMBOLS.get(dc,'$')}{exp['annual']/12:,.0f}")
             if c4.button("✕", key=f"erm_{i}"):
                 exp_rm.append(i)
