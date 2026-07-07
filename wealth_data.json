@@ -2,14 +2,14 @@
   "lang": "zh",
   "display_currency": "AUD",
   "fx_rates": {
-    "USD": 0.695943,
-    "CNY": 4.7268,
-    "HKD": 5.4535
+    "USD": 0.645,
+    "CNY": 4.72,
+    "HKD": 5.04
   },
   "properties": [
     {
       "name": "×Ô×¡·¿ ¡ª Sydney",
-      "value": 0,
+      "value": 7000000,
       "currency": "AUD",
       "mortgage": 0,
       "interest_rate": 6.0,
