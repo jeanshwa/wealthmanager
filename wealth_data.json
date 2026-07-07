@@ -11,14 +11,14 @@
       "name": "自住房 — Sydney",
       "value": 7000000,
       "currency": "AUD",
-      "mortgage": 1150000,
+      "mortgage": 0,
       "interest_rate": 6.0,
-      "loan_years": 29,
-      "monthly_repay": 6980.5530482711665
+      "loan_years": 25,
+      "monthly_repay": 0
     },
     {
       "name": "自有住房 — 中国",
-      "value": 2200000,
+      "value": 0,
       "currency": "CNY",
       "mortgage": 0,
       "interest_rate": 3.5,
@@ -29,13 +29,13 @@
   "super_fund": [
     {
       "name": "Office (商业物业)",
-      "value": 850000,
+      "value": 0,
       "currency": "AUD"
     },
     {
       "name": "ETF (美股)",
       "value": 0,
-      "currency": "AUD"
+      "currency": "USD"
     },
     {
       "name": "现金",
