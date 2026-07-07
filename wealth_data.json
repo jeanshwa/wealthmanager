@@ -1,0 +1,97 @@
+{
+  "lang": "zh",
+  "display_currency": "AUD",
+  "fx_rates": {
+    "USD": 0.695943,
+    "CNY": 4.7268,
+    "HKD": 5.4535
+  },
+  "properties": [
+    {
+      "name": "自住房 — Sydney",
+      "value": 0,
+      "currency": "AUD",
+      "mortgage": 0,
+      "interest_rate": 6.0,
+      "loan_years": 25,
+      "monthly_repay": 0
+    },
+    {
+      "name": "自有住房 — 中国",
+      "value": 0,
+      "currency": "CNY",
+      "mortgage": 0,
+      "interest_rate": 3.5,
+      "loan_years": 20,
+      "monthly_repay": 0
+    }
+  ],
+  "super_fund": [
+    {
+      "name": "Office (商业物业)",
+      "value": 0,
+      "currency": "AUD"
+    },
+    {
+      "name": "ETF (美股)",
+      "value": 0,
+      "currency": "USD"
+    },
+    {
+      "name": "现金",
+      "value": 0,
+      "currency": "AUD"
+    }
+  ],
+  "other_assets": [
+    {
+      "name": "澳洲银行存款",
+      "value": 0,
+      "currency": "AUD",
+      "annual_return": 4.0
+    },
+    {
+      "name": "中国银行存款",
+      "value": 0,
+      "currency": "CNY",
+      "annual_return": 2.0
+    },
+    {
+      "name": "香港账户",
+      "value": 0,
+      "currency": "HKD",
+      "annual_return": 3.5
+    },
+    {
+      "name": "个人 ETF (super外)",
+      "value": 0,
+      "currency": "USD",
+      "annual_return": 7.0
+    },
+    {
+      "name": "其他资产",
+      "value": 0,
+      "currency": "AUD",
+      "annual_return": 0.0
+    }
+  ],
+  "income": [
+    {
+      "name": "Practice 收入 (本人)",
+      "amount": 0,
+      "currency": "AUD"
+    },
+    {
+      "name": "配偶工资",
+      "amount": 0,
+      "currency": "AUD"
+    },
+    {
+      "name": "Office 租金 (Super Fund内)",
+      "amount": 0,
+      "currency": "AUD"
+    }
+  ],
+  "expenses": [
+    {
+      "name": 

@@ -323,7 +323,34 @@ def get_default_data():
 # ================================================================
 def save_data():
     d = st.session_state.data
+    # Protection: don't overwrite existing file if current data is all zeros (fresh/default)
+    has_real_data = any([
+        any(p.get("value", 0) > 0 for p in d.get("properties", [])),
+        any(s.get("value", 0) > 0 for s in d.get("super_fund", [])),
+        any(o.get("value", 0) > 0 for o in d.get("other_assets", [])),
+        any(i.get("amount", 0) > 0 for i in d.get("income", [])),
+    ])
+    if not has_real_data and os.path.exists(DATA_FILE):
+        # Current data is all zeros but file exists — don't overwrite, might be good data
+        try:
+            with open(DATA_FILE, "r") as f:
+                existing = json.load(f)
+            existing_has_data = any([
+                any(p.get("value", 0) > 0 for p in existing.get("properties", [])),
+                any(s.get("value", 0) > 0 for s in existing.get("super_fund", [])),
+            ])
+            if existing_has_data:
+                return  # Don't overwrite good data with zeros
+        except Exception:
+            pass
     try:
+        # Backup before saving
+        if os.path.exists(DATA_FILE):
+            try:
+                import shutil
+                shutil.copy2(DATA_FILE, DATA_FILE + ".bak")
+            except Exception:
+                pass
         with open(DATA_FILE, "w") as f:
             json.dump(d, f, ensure_ascii=False, indent=2)
     except Exception:
@@ -333,6 +360,22 @@ def save_data():
         js = json.dumps(d, ensure_ascii=False)
         _ = streamlit_js_eval(js_expressions=f"localStorage.setItem('wealth_data', JSON.stringify({js}))",
             key=f"save_{datetime.now().timestamp()}")
+    except Exception:
+        pass
+    # Auto-commit data to git (so Cloud redeploys keep data)
+    if has_real_data:
+        _auto_git_save()
+
+def _auto_git_save():
+    """Quietly commit wealth_data.json to git if repo exists. Runs at most once per session."""
+    if st.session_state.get("_git_saved"):
+        return
+    try:
+        if os.path.exists(".git") and os.path.exists(DATA_FILE):
+            subprocess.run(["git", "add", DATA_FILE], capture_output=True, timeout=10)
+            subprocess.run(["git", "commit", "-m", "auto-save data"], capture_output=True, timeout=10)
+            subprocess.run(["git", "push"], capture_output=True, timeout=30)
+            st.session_state._git_saved = True
     except Exception:
         pass
 
