@@ -87,17 +87,17 @@
   "income": [
     {
       "name": "My salary",
-      "amount": 32000,
+      "amount": 75000,
       "currency": "AUD"
     },
     {
       "name": "partner salary",
-      "amount": 32000,
+      "amount": 75000,
       "currency": "AUD"
     },
     {
-      "name": "Office rent (Super)",
-      "amount": 27500,
+      "name": "Business income",
+      "amount": 0,
       "currency": "AUD"
     }
   ],
@@ -124,15 +124,15 @@
     },
     {
       "name": "✈️ Holiday",
-      "annual": 0
+      "annual": 30000
     },
     {
-      "name": "📋 Business fixed",
+      "name": "📋 Business fixed (excluding office rent)",
       "annual": 19220
     },
     {
       "name": "📦Shopping, grocery, food and etc",
-      "annual": 36000
+      "annual": 30000
     }
   ],
   "retirement": {
@@ -153,13 +153,13 @@
   "super_opt": {
     "m1_name": "本人",
     "m2_name": "配偶",
-    "m1_balance": 0,
-    "m2_balance": 0,
-    "m1_sg": 0,
+    "m1_balance": 60000,
+    "m2_balance": 30000,
+    "m1_sg": 3680,
     "m2_sg": 3680,
     "m1_income": 32000,
     "m2_income": 32000,
-    "m1_self_employed": true,
+    "m1_self_employed": false,
     "m2_self_employed": false
   },
   "monte_carlo": {
