@@ -972,30 +972,22 @@ def page_super():
     with c1:
         st.markdown(f"**{so['m1_name']}**")
         so["m1_balance"] = money_input(t("super_bal_aud"), so["m1_balance"], "so_m1b")
-        so.setdefault("m1_self_employed", True)
-        so["m1_self_employed"] = st.checkbox(
-            "自雇 (无SG)" if st.session_state.lang == "zh" else "Self-employed (no SG)",
-            value=so["m1_self_employed"], key="so_m1se")
-        m1_sg = 0 if so["m1_self_employed"] else round(m1_income * SG_RATE)
+        m1_sg = round(m1_income * SG_RATE)
         so["m1_sg"] = m1_sg
         so["m1_income"] = m1_income
         if len(incomes) > 0:
             st.caption(esc(f"🔗 {incomes[0]['name']}: A${m1_income:,.0f}"))
-            st.caption(esc(f"SG: A${m1_sg:,.0f}") + (" (自雇=0)" if so["m1_self_employed"] else f" ({SG_RATE*100:.1f}%)"))
+            st.caption(esc(f"SG: A${m1_sg:,.0f}") + f" ({SG_RATE*100:.1f}%)")
 
     with c2:
         st.markdown(f"**{so['m2_name']}**")
         so["m2_balance"] = money_input(t("super_bal_aud"), so["m2_balance"], "so_m2b")
-        so.setdefault("m2_self_employed", False)
-        so["m2_self_employed"] = st.checkbox(
-            "自雇 (无SG)" if st.session_state.lang == "zh" else "Self-employed (no SG)",
-            value=so["m2_self_employed"], key="so_m2se")
-        m2_sg = 0 if so["m2_self_employed"] else round(m2_income * SG_RATE)
+        m2_sg = round(m2_income * SG_RATE)
         so["m2_sg"] = m2_sg
         so["m2_income"] = m2_income
         if len(incomes) > 1:
             st.caption(esc(f"🔗 {incomes[1]['name']}: A${m2_income:,.0f}"))
-            st.caption(esc(f"SG: A${m2_sg:,.0f}") + (" (自雇=0)" if so["m2_self_employed"] else f" ({SG_RATE*100:.1f}%)"))
+            st.caption(esc(f"SG: A${m2_sg:,.0f}") + f" ({SG_RATE*100:.1f}%)")
 
     CC_CAP, NCC_CAP, NCC_BF = 30000, 120000, 360000
     st.divider()
