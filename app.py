@@ -8,6 +8,34 @@ from datetime import datetime
 # CONFIG
 # ================================================================
 st.set_page_config(page_title="Wealth Manager", page_icon="💰", layout="wide")
+
+# Global CSS for consistent fonts and bigger sidebar menu
+st.markdown("""
+<style>
+/* Sidebar radio buttons - bigger, more spacing */
+div[data-testid="stSidebar"] div[role="radiogroup"] label {
+    font-size: 16px !important;
+    padding: 8px 12px !important;
+    margin-bottom: 2px !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+}
+div[data-testid="stSidebar"] div[role="radiogroup"] label:hover {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+}
+/* Consistent caption font */
+.stCaption, small {
+    font-size: 13px !important;
+}
+/* Metric values */
+div[data-testid="stMetricValue"] {
+    font-size: 22px !important;
+}
+div[data-testid="stMetricLabel"] {
+    font-size: 13px !important;
+}
+</style>
+""", unsafe_allow_html=True)
 DATA_FILE = "wealth_data.json"
 CURRENCIES = ["AUD", "USD", "CNY", "HKD"]
 CUR_SYMBOLS = {"AUD": "A$", "USD": "US$", "CNY": "¥", "HKD": "HK$"}
