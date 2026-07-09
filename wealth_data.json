@@ -55,7 +55,7 @@
   "other_assets": [
     {
       "name": "au",
-      "value": 100000,
+      "value": 0,
       "currency": "AUD",
       "annual_return": 4.0
     },
@@ -63,16 +63,16 @@
       "name": "中国银行存款",
       "value": 15000,
       "currency": "CNY",
-      "annual_return": 2.0
+      "annual_return": 1.0
     },
     {
       "name": "香港账户",
       "value": 7000,
       "currency": "HKD",
-      "annual_return": 3.5
+      "annual_return": 0.0
     },
     {
-      "name": "personal equity",
+      "name": "equity",
       "value": 430000,
       "currency": "AUD",
       "annual_return": 5.0
@@ -87,17 +87,17 @@
   "income": [
     {
       "name": "My salary",
-      "amount": 0,
+      "amount": 32000,
       "currency": "AUD"
     },
     {
-      "name": "配偶工资",
-      "amount": 0,
+      "name": "partner salary",
+      "amount": 32000,
       "currency": "AUD"
     },
     {
-      "name": "Office 租金 (Super Fund内)",
-      "amount": 0,
+      "name": "Office rent (Super)",
+      "amount": 27500,
       "currency": "AUD"
     }
   ],
@@ -108,7 +108,7 @@
     },
     {
       "name": "🍽️ 日常生活",
-      "annual": 0
+      "annual": 60000
     },
     {
       "name": "🎓 子女教育",
@@ -120,7 +120,7 @@
     },
     {
       "name": "🚗 交通/车",
-      "annual": 0
+      "annual": 15000
     },
     {
       "name": "✈️ 旅行/机票",
@@ -144,7 +144,7 @@
     "au_cost": 7700,
     "cn_cost": 9300,
     "biz_class_trips": 3,
-    "ticket_price": 4200,
+    "ticket_price": 6500,
     "health_ins": 4000,
     "real_return": 3.5,
     "annual_contrib": 60000,
