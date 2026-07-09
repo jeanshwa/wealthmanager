@@ -2,9 +2,9 @@
   "lang": "en",
   "display_currency": "AUD",
   "fx_rates": {
-    "USD": 0.693866,
-    "CNY": 4.6987,
-    "HKD": 5.413
+    "USD": 0.69315,
+    "CNY": 4.7125,
+    "HKD": 5.4329
   },
   "properties": [
     {
@@ -14,7 +14,7 @@
       "mortgage": 1150000,
       "interest_rate": 5.99,
       "loan_years": 29,
-      "monthly_repay": 6973.231272744731
+      "monthly_repay": 5740.416666666667
     },
     {
       "name": "3001",
