@@ -8,28 +8,37 @@
   },
   "properties": [
     {
-      "name": "自住房 — Sydney",
+      "name": "hastings",
       "value": 7000000,
       "currency": "AUD",
-      "mortgage": 0,
-      "interest_rate": 6.0,
-      "loan_years": 25,
-      "monthly_repay": 0
+      "mortgage": 1100000,
+      "interest_rate": 5.99,
+      "loan_years": 29,
+      "monthly_repay": 6670.047304364525
     },
     {
-      "name": "自有住房 — 中国",
-      "value": 0,
+      "name": "3001",
+      "value": 2200000,
       "currency": "CNY",
       "mortgage": 0,
       "interest_rate": 3.5,
       "loan_years": 20,
       "monthly_repay": 0
+    },
+    {
+      "name": "crescent",
+      "value": 2500000,
+      "currency": "AUD",
+      "mortgage": 0,
+      "interest_rate": 6.0,
+      "loan_years": 25,
+      "monthly_repay": 0
     }
   ],
   "super_fund": [
     {
-      "name": "Office (商业物业)",
-      "value": 0,
+      "name": "Office",
+      "value": 850000,
       "currency": "AUD"
     },
     {
@@ -45,8 +54,8 @@
   ],
   "other_assets": [
     {
-      "name": "澳洲银行存款",
-      "value": 0,
+      "name": "au",
+      "value": 100000,
       "currency": "AUD",
       "annual_return": 4.0
     },
