@@ -43,12 +43,12 @@
     },
     {
       "name": "Equity",
-      "value": 0,
-      "currency": "USD"
+      "value": 63000,
+      "currency": "AUD"
     },
     {
       "name": "Cash",
-      "value": 0,
+      "value": 5000,
       "currency": "AUD"
     }
   ],
@@ -61,32 +61,32 @@
     },
     {
       "name": "中国银行存款",
-      "value": 0,
+      "value": 15000,
       "currency": "CNY",
       "annual_return": 2.0
     },
     {
       "name": "香港账户",
-      "value": 0,
+      "value": 7000,
       "currency": "HKD",
       "annual_return": 3.5
     },
     {
-      "name": "个人 ETF (super外)",
-      "value": 0,
-      "currency": "USD",
-      "annual_return": 7.0
+      "name": "personal equity",
+      "value": 430000,
+      "currency": "AUD",
+      "annual_return": 5.0
     },
     {
-      "name": "其他资产",
-      "value": 0,
+      "name": "others",
+      "value": 50000,
       "currency": "AUD",
       "annual_return": 0.0
     }
   ],
   "income": [
     {
-      "name": "Practice 收入 (本人)",
+      "name": "My salary",
       "amount": 0,
       "currency": "AUD"
     },
