@@ -18,7 +18,7 @@
     },
     {
       "name": "3001",
-      "value": 2200000,
+      "value": 2000000,
       "currency": "CNY",
       "mortgage": 0,
       "interest_rate": 3.5,
@@ -42,12 +42,12 @@
       "currency": "AUD"
     },
     {
-      "name": "ETF (美股)",
+      "name": "Equity",
       "value": 0,
       "currency": "USD"
     },
     {
-      "name": "现金",
+      "name": "Cash",
       "value": 0,
       "currency": "AUD"
     }
