@@ -1,10 +1,10 @@
 {
-  "lang": "zh",
+  "lang": "en",
   "display_currency": "AUD",
   "fx_rates": {
-    "USD": 0.693481,
-    "CNY": 4.71,
-    "HKD": 5.4106
+    "USD": 0.69315,
+    "CNY": 4.7125,
+    "HKD": 5.4329
   },
   "properties": [
     {
@@ -104,7 +104,7 @@
   "expenses": [
     {
       "name": "🏠 房贷还款",
-      "annual": 0
+      "annual": 80041
     },
     {
       "name": "🍽️ 日常生活",
@@ -158,7 +158,9 @@
     "m1_sg": 0,
     "m2_sg": 0,
     "m1_income": 0,
-    "m2_income": 0
+    "m2_income": 0,
+    "m1_self_employed": true,
+    "m2_self_employed": false
   },
   "monte_carlo": {
     "initial_capital": 2200000,
