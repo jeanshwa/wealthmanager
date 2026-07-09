@@ -2,74 +2,83 @@
   "lang": "zh",
   "display_currency": "AUD",
   "fx_rates": {
-    "USD": 0.645,
-    "CNY": 4.72,
-    "HKD": 5.04
+    "USD": 0.69315,
+    "CNY": 4.7125,
+    "HKD": 5.4329
   },
   "properties": [
     {
-      "name": "×Ô×¡·¿ ¡ª Sydney",
-      "value": 0,
+      "name": "hastings",
+      "value": 7000000,
       "currency": "AUD",
-      "mortgage": 0,
-      "interest_rate": 6.0,
-      "loan_years": 25,
-      "monthly_repay": 0
+      "mortgage": 1100000,
+      "interest_rate": 5.99,
+      "loan_years": 29,
+      "monthly_repay": 6670.047304364525
     },
     {
-      "name": "×ÔÓĞ×¡·¿ ¡ª ÖĞ¹ú",
-      "value": 0,
+      "name": "3001",
+      "value": 2200000,
       "currency": "CNY",
       "mortgage": 0,
       "interest_rate": 3.5,
       "loan_years": 20,
       "monthly_repay": 0
+    },
+    {
+      "name": "crescent",
+      "value": 2500000,
+      "currency": "AUD",
+      "mortgage": 0,
+      "interest_rate": 6.0,
+      "loan_years": 25,
+      "monthly_repay": 0
     }
   ],
   "super_fund": [
     {
-      "name": "Office (ÉÌÒµÎïÒµ)",
-      "value": 0,
+      "name": "Office",
+      "value": 850000,
       "currency": "AUD"
     },
     {
-      "name": "ETF (ÃÀ¹É)",
+      "name": "ETF (ç¾è‚¡)",
       "value": 0,
       "currency": "USD"
     },
     {
-      "name": "ÏÖ½ğ",
+      "name": "ç°é‡‘",
       "value": 0,
       "currency": "AUD"
     }
   ],
   "other_assets": [
     {
-      "name": "°ÄÖŞÒøĞĞ´æ¿î",
-      "value": 0,
+      "name": "au",
+      "value": 100000,
       "currency": "AUD",
       "annual_return": 4.0
     },
     {
-      "name": "ÖĞ¹úÒøĞĞ´æ¿î",
+      "name": "ä¸­å›½é“¶è¡Œå­˜æ¬¾",
       "value": 0,
       "currency": "CNY",
       "annual_return": 2.0
     },
     {
-      "name": "Ïã¸ÛÕË»§",
+      "name": "é¦™æ¸¯è´¦æˆ·",
       "value": 0,
       "currency": "HKD",
       "annual_return": 3.5
     },
     {
-      "name": "¸öÈË ETF (superÍâ)",
+      "name": "ä¸ªäºº ETF (superå¤–)",
       "value": 0,
       "currency": "USD",
       "annual_return": 7.0
     },
     {
-      "name": "ÆäËû×Ê²ú",
+      "name": "å…¶ä»–èµ„äº§",
       "value": 0,
       "currency": "AUD",
       "annual_return": 0.0
@@ -77,21 +86,87 @@
   ],
   "income": [
     {
-      "name": "Practice ÊÕÈë (±¾ÈË)",
+      "name": "Practice æ”¶å…¥ (æœ¬äºº)",
       "amount": 0,
       "currency": "AUD"
     },
     {
-      "name": "ÅäÅ¼¹¤×Ê",
+      "name": "é…å¶å·¥èµ„",
       "amount": 0,
       "currency": "AUD"
     },
     {
-      "name": "Office ×â½ğ (Super FundÄÚ)",
+      "name": "Office ç§Ÿé‡‘ (Super Fundå†…)",
       "amount": 0,
       "currency": "AUD"
     }
   ],
   "expenses": [
     {
-      "name": 
+      "name": "ğŸ  æˆ¿è´·è¿˜æ¬¾",
+      "annual": 0
+    },
+    {
+      "name": "ğŸ½ï¸ æ—¥å¸¸ç”Ÿæ´»",
+      "annual": 0
+    },
+    {
+      "name": "ğŸ“ å­å¥³æ•™è‚²",
+      "annual": 0
+    },
+    {
+      "name": "ğŸ¥ ç§äººåŒ»ä¿",
+      "annual": 0
+    },
+    {
+      "name": "ğŸš— äº¤é€š/è½¦",
+      "annual": 0
+    },
+    {
+      "name": "âœˆï¸ æ—…è¡Œ/æœºç¥¨",
+      "annual": 0
+    },
+    {
+      "name": "ğŸ“‹ ä¿é™©",
+      "annual": 0
+    },
+    {
+      "name": "ğŸ“¦ å…¶ä»–",
+      "annual": 0
+    }
+  ],
+  "retirement": {
+    "current_age": 45,
+    "target_age": 60,
+    "life_expectancy": 90,
+    "months_au": 6,
+    "months_cn": 6,
+    "au_cost": 7700,
+    "cn_cost": 9300,
+    "biz_class_trips": 3,
+    "ticket_price": 4200,
+    "health_ins": 4000,
+    "real_return": 3.5,
+    "annual_contrib": 60000,
+    "current_super": 870000
+  },
+  "super_opt": {
+    "m1_name": "æœ¬äºº",
+    "m2_name": "é…å¶",
+    "m1_balance": 0,
+    "m2_balance": 0,
+    "m1_sg": 0,
+    "m2_sg": 0,
+    "m1_income": 0,
+    "m2_income": 0
+  },
+  "monte_carlo": {
+    "initial_capital": 2200000,
+    "annual_withdrawal": 88000,
+    "years": 30,
+    "nominal_return": 7.0,
+    "volatility": 12.0,
+    "inflation": 2.5,
+    "num_sims": 5000
+  }
+}

@@ -226,32 +226,11 @@ def t(key):
 # UI HELPERS
 # ================================================================
 def money_input(label, value, key, container=None):
-    """Text input with comma-separated thousands display.
-    Always syncs from data dict value on fresh session (page refresh)."""
+    """Reliable number input using Streamlit's native widget"""
     ctx = container or st
-    # Generate a data-sync key to detect when underlying data changes
-    expected = f"{int(value):,}" if value else "0"
-    data_key = f"_data_{key}"
-    # Re-initialize if: fresh session OR underlying data value changed
-    if key not in st.session_state or st.session_state.get(data_key) != value:
-        st.session_state[key] = expected
-        st.session_state[data_key] = value
-    def _reformat():
-        raw = st.session_state.get(key, "0")
-        try:
-            num = int(float(raw.replace(",", "").replace(" ", "")))
-            st.session_state[key] = f"{num:,}"
-            st.session_state[data_key] = num  # keep data_key in sync
-        except:
-            pass
-    ctx.text_input(label, key=key, on_change=_reformat,
-        label_visibility="collapsed" if not label else "visible")
-    try:
-        parsed = max(int(float(st.session_state.get(key, "0").replace(",", "").replace(" ", ""))), 0)
-        st.session_state[data_key] = parsed  # keep in sync
-        return parsed
-    except:
-        return int(value) if value else 0
+    result = ctx.number_input(label, value=int(value), step=10000, min_value=0, key=key,
+        format="%d", label_visibility="collapsed" if not label else "visible")
+    return result
 
 def calc_monthly_repayment(principal, annual_rate_pct, years):
     """Standard mortgage amortization formula"""
@@ -334,15 +313,19 @@ def get_default_data():
 def save_data():
     d = st.session_state.data
     try:
-        # Always create backup before saving
+        # Backup
         if os.path.exists(DATA_FILE):
             import shutil
             shutil.copy2(DATA_FILE, DATA_FILE + ".bak")
-        with open(DATA_FILE, "w") as f:
+    except Exception:
+        pass  # Backup failure is non-fatal
+    try:
+        with open(DATA_FILE, "w", encoding="utf-8") as f:
             json.dump(d, f, ensure_ascii=False, indent=2)
         st.session_state._last_saved = datetime.now().strftime("%H:%M:%S")
-    except Exception:
-        pass
+        st.session_state._save_error = None
+    except Exception as e:
+        st.session_state._save_error = str(e)
     try:
         from streamlit_js_eval import streamlit_js_eval
         js = json.dumps(d, ensure_ascii=False)
@@ -350,7 +333,7 @@ def save_data():
             key=f"save_{datetime.now().timestamp()}")
     except Exception:
         pass
-    # Auto-commit data to git (so Cloud redeploys keep data)
+    # Auto-commit data to git
     has_real_data = any([
         any(p.get("value", 0) > 0 for p in d.get("properties", [])),
         any(s.get("value", 0) > 0 for s in d.get("super_fund", [])),
@@ -376,7 +359,7 @@ def _auto_git_save():
 def load_data():
     if os.path.exists(DATA_FILE):
         try:
-            with open(DATA_FILE, "r") as f:
+            with open(DATA_FILE, "r", encoding="utf-8") as f:
                 return json.load(f)
         except Exception:
             pass
@@ -394,20 +377,41 @@ def load_from_localstorage():
 
 @st.cache_data(ttl=3600, show_spinner=False)
 def _fetch_fx_cached():
+    # Try Yahoo Finance first
     try:
         import yfinance as yf
         tickers = {"USD": "AUDUSD=X", "CNY": "AUDCNY=X", "HKD": "AUDHKD=X"}
         result = {}
-        data = yf.download(list(tickers.values()), period="1d", progress=False)
         for cur, ticker in tickers.items():
             try:
-                price = float(data["Close"][ticker].dropna().iloc[-1])
-                result[cur] = round(price, 6)
+                import time
+                time.sleep(0.5)  # Avoid rate limiting
+                data = yf.download(ticker, period="5d", progress=False, auto_adjust=False)
+                if not data.empty:
+                    price = data["Close"].dropna().iloc[-1].item()
+                    result[cur] = round(price, 6)
             except Exception:
                 pass
-        return result if result else None
+        if result:
+            return result
     except Exception:
-        return None
+        pass
+    # Fallback: free API (no key needed)
+    try:
+        import urllib.request, json as _json
+        url = "https://open.er-api.com/v6/latest/AUD"
+        with urllib.request.urlopen(url, timeout=10) as resp:
+            data = _json.loads(resp.read())
+            if data.get("result") == "success":
+                rates = data["rates"]
+                return {
+                    "USD": round(rates.get("USD", 0.645), 6),
+                    "CNY": round(rates.get("CNY", 4.72), 4),
+                    "HKD": round(rates.get("HKD", 5.04), 4),
+                }
+    except Exception:
+        pass
+    return None
 
 def fetch_live_fx():
     return _fetch_fx_cached()
@@ -569,7 +573,7 @@ def check_password():
     st.markdown("<div style='max-width:400px;margin:120px auto;text-align:center'>", unsafe_allow_html=True)
     st.title(t("login_title"))
     pw = st.text_input(t("login_prompt"), type="password", key="login_pw")
-    if st.button(t("login_btn"), type="primary", use_container_width=True):
+    if st.button(t("login_btn"), type="primary", width='stretch'):
         try:
             correct = st.secrets["password"]
         except Exception:
@@ -623,7 +627,7 @@ def page_dashboard():
                 textinfo="label+percent", textfont=dict(size=12)))
             fig.update_layout(**PLOTLY_LAYOUT, height=320, showlegend=False)
             fig.add_annotation(text=fmt_cur(nw, dc), x=0.5, y=0.5, font=dict(size=18, color="#e6edf3"), showarrow=False)
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width='stretch')
         else:
             st.info(t("enter_data_first"))
     with col2:
@@ -636,7 +640,7 @@ def page_dashboard():
             name=t("drawdown"), line=dict(color="#f85149", width=2), fill="tozeroy", fillcolor="rgba(248,81,73,0.1)"))
         fig.add_hline(y=0, line_dash="dash", line_color="rgba(255,255,255,0.3)")
         fig.update_layout(**PLOTLY_LAYOUT, height=320, xaxis_title=t("age"), yaxis_title=dc)
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
     # Alerts
     st.subheader(t("alerts"))
     sf_total = sum(to_aud(s["value"], s["currency"], d["fx_rates"]) for s in d["super_fund"])
@@ -803,7 +807,7 @@ def page_cashflow():
         totals=dict(marker=dict(color="#4da6ff")),
         textposition="outside", textfont=dict(size=10)))
     fig.update_layout(**PLOTLY_LAYOUT, height=400, showlegend=False)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
 
 def page_retirement():
@@ -855,7 +859,7 @@ def page_retirement():
     fig.add_hline(y=needed, line_dash="dot", line_color="#4da6ff", annotation_text="4% Rule Line")
     fig.add_hline(y=0, line_dash="dash", line_color="rgba(255,255,255,0.3)")
     fig.update_layout(**PLOTLY_LAYOUT, height=400, xaxis_title=t("age"), yaxis_title=f"{t('capital')} ({dc})")
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
     # Sensitivity
     st.subheader(t("sensitivity"))
     scenarios = []
@@ -865,7 +869,7 @@ def page_retirement():
         lasts = f"{da}{t('age_suffix')}" if da <= r["life_expectancy"] else f">{r['life_expectancy']}{t('age_suffix')}"
         scenarios.append({t("scenario"): label, t("capital_at_retire"): fmt_cur(cr, dc), t("lasts_until"): lasts,
             t("status"): "✅" if da > r["life_expectancy"] else ("⚠️" if da > r["life_expectancy"]-5 else "❌")})
-    st.dataframe(scenarios, use_container_width=True, hide_index=True)
+    st.dataframe(scenarios, width='stretch', hide_index=True)
     if gap >= 0:
         st.success(t("suggest_ok").format(cost=fmt_cur(r["biz_class_trips"]*r["ticket_price"]*2, dc)))
     else:
@@ -936,13 +940,13 @@ def page_super():
         results.append({t("member"): name, t("cc_cap"): f"${CC_CAP:,}", t("cc_used"): f"${sg:,.0f}",
             t("cc_room"): f"${room:,.0f}", t("carry_forward"): f"✅ ~${cf_est:,.0f}" if can_cf else "❌ >$500k",
             t("optimal_cc"): f"${optimal:,.0f}", t("tax_saved"): f"${tax_saving:,.0f}"})
-    st.dataframe(results, use_container_width=True, hide_index=True)
+    st.dataframe(results, width='stretch', hide_index=True)
     st.subheader(t("ncc"))
     ncc_r = []
     for name, bal in [(so["m1_name"],so["m1_balance"]),(so["m2_name"],so["m2_balance"])]:
         ncc_r.append({t("member"):name, t("ncc_annual"):f"${NCC_CAP:,}", t("bring_forward"):f"${NCC_BF:,}",
             t("eligible"): "✅" if bal < 1900000 else "❌ >$1.9M"})
-    st.dataframe(ncc_r, use_container_width=True, hide_index=True)
+    st.dataframe(ncc_r, width='stretch', hide_index=True)
     for name, inc, sg in [(so["m1_name"],m1_income,m1_sg),(so["m2_name"],m2_income,m2_sg)]:
         th = inc + CC_CAP
         if th > 250000 and inc > 0:
@@ -996,7 +1000,7 @@ def page_monte_carlo():
             line=dict(color="#4da6ff", width=2.5), name="P50"))
         fig.add_hline(y=0, line_dash="dash", line_color="rgba(248,81,73,0.5)")
         fig.update_layout(**PLOTLY_LAYOUT, height=400, xaxis_title=t("years_after_retire"), yaxis_title="AUD")
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
         # Stress test
         st.subheader(t("stress_test"))
         sa = d["retirement"].get("target_age", 60)
@@ -1017,7 +1021,7 @@ def page_monte_carlo():
                 eb, ea = stress_test_sequence(mca, cy, cash_bucket=cash)
                 rows.append({t("scenario"):label,t("crash_year"):f"{sa+cy}{t('age_suffix')}",t("crash_size"):"-35%",t("recovery"):"3yr",
                     t("lasts_until"):f"{'>' if eb>0 else ''}{ea}{t('age_suffix')}",t("status"):"✅" if eb>0 else "❌"})
-        st.dataframe(rows, use_container_width=True, hide_index=True)
+        st.dataframe(rows, width='stretch', hide_index=True)
         if sr >= 0.9:
             st.success(t("mc_ok").format(sr=sr*100, bucket=fmt_cur(mc["annual_withdrawal"]*2,"AUD")))
         elif sr >= 0.8:
@@ -1064,7 +1068,7 @@ def page_currency():
         rows.append({t("scenario"):label,"AUD/USD":f"{ur:.3f}","AUD/CNY":f"{cr:.2f}",
             t("us_etf_aud"):fmt_cur(ea,"AUD"),t("cn_cost_aud"):fmt_cur(ca,"AUD"),
             t("net_impact"): t("baseline_label") if label==t("current") else f"{'+' if ed-abs(cd)>=0 else ''}{fmt_cur(ed-abs(cd),'AUD')}"})
-    st.dataframe(rows, use_container_width=True, hide_index=True)
+    st.dataframe(rows, width='stretch', hide_index=True)
     if us_etf_usd > 0:
         st.info(t("fx_hedge_tip"))
 
@@ -1099,7 +1103,7 @@ def page_settings():
                 st.session_state.lang = imported.get("lang", "zh")
                 # Clear money_input widget cache so new values display correctly
                 for k in list(st.session_state.keys()):
-                    if k.startswith(("pv_","pm_","sv_","ov_","ia_","ea_","so_","mc_","r_")):
+                    if k.startswith(("pv_","pm_","sv_","ov_","ia_","ea_","so_","mc_","r_","_data_")):
                         del st.session_state[k]
                 save_data(); st.success(t("import_ok")); st.rerun()
             except Exception as e:
@@ -1109,7 +1113,7 @@ def page_settings():
             st.session_state.data = get_default_data()
             st.session_state.lang = "zh"
             for k in list(st.session_state.keys()):
-                if k.startswith(("pv_","pm_","sv_","ov_","ia_","ea_","so_","mc_","r_")):
+                if k.startswith(("pv_","pm_","sv_","ov_","ia_","ea_","so_","mc_","r_","_data_")):
                     del st.session_state[k]
             save_data(); st.rerun()
 
@@ -1169,7 +1173,9 @@ def main():
         st.caption("⚠️ " + t("not_financial_advice"))
         st.caption(f"💾 {t('auto_saved')}")
         if st.session_state.get("_last_saved"):
-            st.caption(f"🕐 {st.session_state._last_saved}")
+            st.caption(f"✅ {st.session_state._last_saved}")
+        if st.session_state.get("_save_error"):
+            st.caption(f"❌ {st.session_state._save_error}")
     {"dashboard": page_dashboard, "assets": page_assets, "cashflow": page_cashflow,
      "retirement": page_retirement, "super": page_super, "monte": page_monte_carlo,
      "currency": page_currency, "settings": page_settings}[active]()
