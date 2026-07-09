@@ -249,6 +249,10 @@ def fmt_cur(amount, cur=None):
         return f"{sym}{amount/1_000_000:,.2f}M"
     return f"{sym}{amount:,.0f}"
 
+def fmt_md(amount, cur=None):
+    """Currency format safe for markdown (escapes $ for LaTeX)"""
+    return fmt_cur(amount, cur).replace("$", r"\$")
+
 # ================================================================
 # DEFAULT DATA
 # ================================================================
@@ -624,7 +628,7 @@ def page_dashboard():
     c2.metric(t("retirement_gap"), fmt_cur(gap, "AUD"), "✅" if gap >= 0 else "⚠️")
     c3.metric(t("retire_age"), f"{d['retirement']['target_age']}", "✅" if gap >= 0 else t("need_more_contrib"))
     if passive > 0:
-        st.info(f"💰 {t('passive_income')}: {fmt_cur(passive, 'AUD')}" + (" (退休时抵减提取额)" if st.session_state.lang == "zh" else " (offsets retirement withdrawals)"))
+        st.info(f"💰 {t('passive_income')}: {fmt_md(passive, 'AUD')}" + (" (退休时抵减提取额)" if st.session_state.lang == "zh" else " (offsets retirement withdrawals)"))
 
     col1, col2 = st.columns(2)
     with col1:
@@ -660,7 +664,7 @@ def page_dashboard():
         if pct > 70:
             st.warning(t("sf_concentration_warn").format(pct=pct, name=mx["name"]))
     if gap < 0:
-        st.error(t("retire_gap_warn").format(gap=fmt_cur(abs(gap), dc)))
+        st.error(t("retire_gap_warn").format(gap=fmt_md(abs(gap), dc)))
     else:
         st.success(t("retire_ok"))
 
@@ -683,7 +687,7 @@ def page_assets():
             props_rm.append(i)
         # Row 2: Mortgage details (indented)
         c1, c2, c3, c4, c5 = st.columns([1, 2, 1, 0.8, 1.5])
-        c1.markdown(f"<span style='font-size:13px;color:#8b949e'>{t('mortgage')}</span>", unsafe_allow_html=True)
+        c1.caption(t('mortgage'))
         p["mortgage"] = money_input("", p["mortgage"], f"pm_{i}", container=c2)
         p["interest_rate"] = c3.number_input("Rate%", value=p.get("interest_rate", 6.0),
             step=0.1, format="%.2f", key=f"pir_{i}", label_visibility="collapsed")
@@ -691,7 +695,7 @@ def page_assets():
             min_value=0, max_value=40, key=f"ply_{i}", label_visibility="collapsed")
         auto_repay = calc_monthly_repayment(p["mortgage"], p["interest_rate"], p["loan_years"])
         p["monthly_repay"] = auto_repay
-        c5.markdown(f"<span style='font-size:13px;color:#8b949e'>{CUR_SYMBOLS[p['currency']]}{auto_repay:,.0f}/mo · {t('equity')}: {CUR_SYMBOLS[p['currency']]}{p['value']-p['mortgage']:,.0f}</span>", unsafe_allow_html=True)
+        c5.caption(f"{CUR_SYMBOLS[p['currency']]}{auto_repay:,.0f}/mo · {t('equity')}: {CUR_SYMBOLS[p['currency']]}{p['value']-p['mortgage']:,.0f}")
         st.divider()
     for i in sorted(props_rm, reverse=True):
         d["properties"].pop(i); st.rerun()
@@ -747,7 +751,7 @@ def page_assets():
     with c1:
         fx_str = " · ".join([f"AUD/{k} {v}" for k, v in fx.items()])
         st.caption(f"{t('fx_label')}: {fx_str}")
-        st.markdown(f"**{fmt_cur(total_a, dc)}** − {fmt_cur(total_l, dc)} = **{fmt_cur(nw, dc)}**")
+        st.markdown(f"**{fmt_md(total_a, dc)}** − {fmt_md(total_l, dc)} = **{fmt_md(nw, dc)}**")
     with c2:
         new_dc = st.selectbox(t("display_cur"), CURRENCIES, index=CURRENCIES.index(dc), key="asset_dc",
             format_func=lambda x: f"{CUR_FLAGS[x]}", label_visibility="collapsed")
@@ -767,7 +771,7 @@ def page_cashflow():
             key=f"ic_{i}", label_visibility="collapsed", format_func=lambda x: f"{CUR_FLAGS[x]}")
         inc["name"] = c2.text_input("name", inc["name"], key=f"in_{i}", label_visibility="collapsed")
         inc["amount"] = money_input("", inc["amount"], f"ia_{i}", container=c3)
-        c4.markdown(f"<span style='font-size:13px;color:#8b949e'>{CUR_SYMBOLS.get(inc['currency'],'$')}{inc['amount']/12:,.0f}/mo</span>", unsafe_allow_html=True)
+        c4.caption(f"{CUR_SYMBOLS.get(inc['currency'],'A$')}{inc['amount']/12:,.0f}/mo")
         if c5.button("✕", key=f"irm_{i}"):
             inc_rm.append(i)
     for i in sorted(inc_rm, reverse=True):
@@ -866,7 +870,7 @@ def page_retirement():
     c4.metric(t("retirement_gap"), fmt_cur(gap, dc), t("surplus_ok") if gap >= 0 else t("shortfall"))
     if passive > 0:
         if cap_retire > 0 and passive > 0:
-            st.info(t("passive_retire_note").format(p=fmt_cur(passive, "AUD"), w=fmt_cur(net_withdrawal, "AUD"), r=f"{net_withdrawal/cap_retire*100:.1f}"))
+            st.info(t("passive_retire_note").format(p=fmt_md(passive, "AUD"), w=fmt_md(net_withdrawal, "AUD"), r=f"{net_withdrawal/cap_retire*100:.1f}"))
     # Chart
     st.subheader(t("projection"))
     fig = go.Figure()
@@ -889,10 +893,10 @@ def page_retirement():
             t("status"): "✅" if da > r["life_expectancy"] else ("⚠️" if da > r["life_expectancy"]-5 else "❌")})
     st.dataframe(scenarios, width='stretch', hide_index=True)
     if gap >= 0:
-        st.success(t("suggest_ok").format(cost=fmt_cur(r["biz_class_trips"]*r["ticket_price"]*2, dc)))
+        st.success(t("suggest_ok").format(cost=fmt_md(r["biz_class_trips"]*r["ticket_price"]*2, dc)))
     else:
         extra = abs(gap) / max(r["target_age"] - r["current_age"], 1)
-        st.warning(t("suggest_gap").format(extra=fmt_cur(extra, dc)))
+        st.warning(t("suggest_gap").format(extra=fmt_md(extra, dc)))
 
 
 def page_super():
@@ -1041,7 +1045,7 @@ def page_monte_carlo():
                     t("lasts_until"):f"{'>' if eb>0 else ''}{ea}{t('age_suffix')}",t("status"):"✅" if eb>0 else "❌"})
         st.dataframe(rows, width='stretch', hide_index=True)
         if sr >= 0.9:
-            st.success(t("mc_ok").format(sr=sr*100, bucket=fmt_cur(mc["annual_withdrawal"]*2,"AUD")))
+            st.success(t("mc_ok").format(sr=sr*100, bucket=fmt_md(mc["annual_withdrawal"]*2,"AUD")))
         elif sr >= 0.8:
             st.warning(t("mc_warn").format(sr=sr*100))
         else:
