@@ -104,30 +104,30 @@
   "expenses": [
     {
       "name": "🏠 房贷还款",
-      "annual": 83679
+      "annual": 68885
     },
     {
-      "name": "🍽️ 日常生活",
+      "name": "🍽️ Livings expenses",
       "annual": 60000
     },
     {
-      "name": "🎓 子女教育",
+      "name": "🎓 Children",
       "annual": 0
     },
     {
-      "name": "🏥 私人医保",
+      "name": "🏥 Health insurance",
       "annual": 0
     },
     {
-      "name": "🚗 交通/车",
+      "name": "🚗 Transport",
       "annual": 15000
     },
     {
-      "name": "✈️ 旅行/机票",
+      "name": "✈️ Holiday",
       "annual": 0
     },
     {
-      "name": "📋 保险",
+      "name": "📋 Insurance",
       "annual": 0
     },
     {
