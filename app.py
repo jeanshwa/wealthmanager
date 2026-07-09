@@ -226,20 +226,30 @@ def t(key):
 # UI HELPERS
 # ================================================================
 def money_input(label, value, key, container=None):
-    """Text input with comma-separated thousands display"""
+    """Text input with comma-separated thousands display.
+    Always syncs from data dict value on fresh session (page refresh)."""
     ctx = container or st
-    if key not in st.session_state:
-        st.session_state[key] = f"{int(value):,}" if value else "0"
+    # Generate a data-sync key to detect when underlying data changes
+    expected = f"{int(value):,}" if value else "0"
+    data_key = f"_data_{key}"
+    # Re-initialize if: fresh session OR underlying data value changed
+    if key not in st.session_state or st.session_state.get(data_key) != value:
+        st.session_state[key] = expected
+        st.session_state[data_key] = value
     def _reformat():
         raw = st.session_state.get(key, "0")
         try:
             num = int(float(raw.replace(",", "").replace(" ", "")))
             st.session_state[key] = f"{num:,}"
+            st.session_state[data_key] = num  # keep data_key in sync
         except:
             pass
-    ctx.text_input(label, key=key, on_change=_reformat, label_visibility="collapsed" if not label else "visible")
+    ctx.text_input(label, key=key, on_change=_reformat,
+        label_visibility="collapsed" if not label else "visible")
     try:
-        return max(int(float(st.session_state.get(key, "0").replace(",", "").replace(" ", ""))), 0)
+        parsed = max(int(float(st.session_state.get(key, "0").replace(",", "").replace(" ", ""))), 0)
+        st.session_state[data_key] = parsed  # keep in sync
+        return parsed
     except:
         return int(value) if value else 0
 
@@ -323,36 +333,14 @@ def get_default_data():
 # ================================================================
 def save_data():
     d = st.session_state.data
-    # Protection: don't overwrite existing file if current data is all zeros (fresh/default)
-    has_real_data = any([
-        any(p.get("value", 0) > 0 for p in d.get("properties", [])),
-        any(s.get("value", 0) > 0 for s in d.get("super_fund", [])),
-        any(o.get("value", 0) > 0 for o in d.get("other_assets", [])),
-        any(i.get("amount", 0) > 0 for i in d.get("income", [])),
-    ])
-    if not has_real_data and os.path.exists(DATA_FILE):
-        # Current data is all zeros but file exists — don't overwrite, might be good data
-        try:
-            with open(DATA_FILE, "r") as f:
-                existing = json.load(f)
-            existing_has_data = any([
-                any(p.get("value", 0) > 0 for p in existing.get("properties", [])),
-                any(s.get("value", 0) > 0 for s in existing.get("super_fund", [])),
-            ])
-            if existing_has_data:
-                return  # Don't overwrite good data with zeros
-        except Exception:
-            pass
     try:
-        # Backup before saving
+        # Always create backup before saving
         if os.path.exists(DATA_FILE):
-            try:
-                import shutil
-                shutil.copy2(DATA_FILE, DATA_FILE + ".bak")
-            except Exception:
-                pass
+            import shutil
+            shutil.copy2(DATA_FILE, DATA_FILE + ".bak")
         with open(DATA_FILE, "w") as f:
             json.dump(d, f, ensure_ascii=False, indent=2)
+        st.session_state._last_saved = datetime.now().strftime("%H:%M:%S")
     except Exception:
         pass
     try:
@@ -363,6 +351,12 @@ def save_data():
     except Exception:
         pass
     # Auto-commit data to git (so Cloud redeploys keep data)
+    has_real_data = any([
+        any(p.get("value", 0) > 0 for p in d.get("properties", [])),
+        any(s.get("value", 0) > 0 for s in d.get("super_fund", [])),
+        any(o.get("value", 0) > 0 for o in d.get("other_assets", [])),
+        any(i.get("amount", 0) > 0 for i in d.get("income", [])),
+    ])
     if has_real_data:
         _auto_git_save()
 
@@ -1174,6 +1168,8 @@ def main():
         st.divider()
         st.caption("⚠️ " + t("not_financial_advice"))
         st.caption(f"💾 {t('auto_saved')}")
+        if st.session_state.get("_last_saved"):
+            st.caption(f"🕐 {st.session_state._last_saved}")
     {"dashboard": page_dashboard, "assets": page_assets, "cashflow": page_cashflow,
      "retirement": page_retirement, "super": page_super, "monte": page_monte_carlo,
      "currency": page_currency, "settings": page_settings}[active]()
