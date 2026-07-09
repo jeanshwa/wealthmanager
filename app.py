@@ -219,7 +219,7 @@ TR = {
 }
 
 def t(key):
-    lang = st.session_state.get("lang", "zh")
+    lang = st.session_state.get("lang", "en")
     return TR.get(key, {}).get(lang, key)
 
 # ================================================================
@@ -253,12 +253,16 @@ def fmt_md(amount, cur=None):
     """Currency format safe for markdown (escapes $ for LaTeX)"""
     return fmt_cur(amount, cur).replace("$", r"\$")
 
+def esc(text):
+    """Escape $ signs for markdown/caption rendering"""
+    return str(text).replace("$", r"\$")
+
 # ================================================================
 # DEFAULT DATA
 # ================================================================
 def get_default_data():
     return {
-        "lang": "zh", "display_currency": "AUD",
+        "lang": "en", "display_currency": "AUD",
         "fx_rates": {"USD": 0.645, "CNY": 4.72, "HKD": 5.04},
         "properties": [
             {"name": "自住房 — Sydney", "value": 0, "currency": "AUD", "mortgage": 0, "interest_rate": 6.0, "loan_years": 25, "monthly_repay": 0},
@@ -695,7 +699,8 @@ def page_assets():
             min_value=0, max_value=40, key=f"ply_{i}", label_visibility="collapsed")
         auto_repay = calc_monthly_repayment(p["mortgage"], p["interest_rate"], p["loan_years"])
         p["monthly_repay"] = auto_repay
-        c5.caption(f"{CUR_SYMBOLS[p['currency']]}{auto_repay:,.0f}/mo · {t('equity')}: {CUR_SYMBOLS[p['currency']]}{p['value']-p['mortgage']:,.0f}")
+        sym = esc(CUR_SYMBOLS[p['currency']])
+        c5.caption(f"{sym}{auto_repay:,.0f}/mo · {t('equity')}: {sym}{p['value']-p['mortgage']:,.0f}")
         st.divider()
     for i in sorted(props_rm, reverse=True):
         d["properties"].pop(i); st.rerun()
@@ -720,7 +725,7 @@ def page_assets():
     c1, c2 = st.columns(2)
     if c1.button(t("add_super_item")):
         d["super_fund"].append({"name": t("new_item"), "value": 0, "currency": "AUD"}); st.rerun()
-    c2.caption(f"{t('sf_total_label')}: {fmt_cur(to_display(sf_aud, 'AUD', dc, fx), dc)}")
+    c2.caption(f"{t('sf_total_label')}: {fmt_md(to_display(sf_aud, 'AUD', dc, fx), dc)}")
 
     # ── Cash & Other ──
     st.subheader(t("cash_other"))
@@ -742,7 +747,7 @@ def page_assets():
     if c1.button(t("add_asset")):
         d["other_assets"].append({"name": t("new_asset"), "value": 0, "currency": "AUD", "annual_return": 0.0}); st.rerun()
     if passive > 0:
-        c2.caption(f"📈 {t('passive_income')}: {fmt_cur(passive, 'AUD')}/yr")
+        c2.caption(f"📈 {t('passive_income')}: {fmt_md(passive, 'AUD')}/yr")
 
     # ── Summary ──
     st.divider()
@@ -771,7 +776,7 @@ def page_cashflow():
             key=f"ic_{i}", label_visibility="collapsed", format_func=lambda x: f"{CUR_FLAGS[x]}")
         inc["name"] = c2.text_input("name", inc["name"], key=f"in_{i}", label_visibility="collapsed")
         inc["amount"] = money_input("", inc["amount"], f"ia_{i}", container=c3)
-        c4.caption(f"{CUR_SYMBOLS.get(inc['currency'],'A$')}{inc['amount']/12:,.0f}/mo")
+        c4.caption(f"{esc(CUR_SYMBOLS.get(inc['currency'],'A$'))}{inc['amount']/12:,.0f}/mo")
         if c5.button("✕", key=f"irm_{i}"):
             inc_rm.append(i)
     for i in sorted(inc_rm, reverse=True):
@@ -794,11 +799,11 @@ def page_cashflow():
         if is_mortgage:
             c1.text_input(t("name"), exp["name"], key=f"en_{i}", disabled=True, label_visibility="collapsed")
             c2.text_input("annual", f"{total_annual_repay:,}", key=f"ea_m_{i}", disabled=True, label_visibility="collapsed")
-            c3.caption(f"{t('monthly')} {CUR_SYMBOLS.get(dc,'$')}{total_monthly_repay:,.0f} · {t('auto_link')}")
+            c3.caption(f"{t('monthly')} {esc(CUR_SYMBOLS.get(dc,'$'))}{total_monthly_repay:,.0f} · {t('auto_link')}")
         else:
             exp["name"] = c1.text_input(t("name"), exp["name"], key=f"en_{i}", label_visibility="collapsed")
             exp["annual"] = money_input("", exp["annual"], f"ea_{i}", container=c2)
-            c3.caption(f"{t('monthly')} {CUR_SYMBOLS.get(dc,'$')}{exp['annual']/12:,.0f}")
+            c3.caption(f"{t('monthly')} {esc(CUR_SYMBOLS.get(dc,'$'))}{exp['annual']/12:,.0f}")
             if c4.button("✕", key=f"erm_{i}"):
                 exp_rm.append(i)
     for i in sorted(exp_rm, reverse=True):
@@ -845,13 +850,13 @@ def page_retirement():
     with c1:
         r["months_au"] = st.number_input(t("months_au"), value=r["months_au"], min_value=0, max_value=12, key="r_mau")
         r["au_cost"] = money_input(t("au_cost_aud"), r["au_cost"], "r_auc")
-        st.caption(f"A${r['au_cost']:,} × {r['months_au']}mo = A${r['au_cost']*r['months_au']:,}/yr")
+        st.caption(esc(f"A${r['au_cost']:,} × {r['months_au']}mo = A${r['au_cost']*r['months_au']:,}/yr"))
         r["biz_class_trips"] = st.number_input(t("biz_class_trips"), value=r["biz_class_trips"], min_value=0, max_value=12, key="r_bct")
     with c2:
         r["months_cn"] = st.number_input(t("months_cn"), value=r["months_cn"], min_value=0, max_value=12, key="r_mcn")
         r["cn_cost"] = money_input(t("cn_cost_aud"), r["cn_cost"], "r_cnc")
         cn_annual_aud = to_aud(r["cn_cost"] * r["months_cn"], "CNY", d["fx_rates"])
-        st.caption(f"¥{r['cn_cost']:,} × {r['months_cn']}mo = A${cn_annual_aud:,.0f}/yr")
+        st.caption(esc(f"¥{r['cn_cost']:,} × {r['months_cn']}mo = A${cn_annual_aud:,.0f}/yr"))
         r["ticket_price"] = money_input(t("ticket_aud"), r["ticket_price"], "r_tp")
     c1, c2, c3 = st.columns(3)
     r["health_ins"] = money_input(t("health_ins_aud"), r["health_ins"], "r_hi")
@@ -931,8 +936,8 @@ def page_super():
         so["m1_sg"] = m1_sg
         so["m1_income"] = m1_income
         if len(incomes) > 0:
-            st.caption(f"🔗 {incomes[0]['name']}: A${m1_income:,.0f}")
-            st.caption(f"SG: A${m1_sg:,.0f}" + (" (自雇=0)" if so["m1_self_employed"] else f" ({SG_RATE*100:.1f}%)"))
+            st.caption(esc(f"🔗 {incomes[0]['name']}: A${m1_income:,.0f}"))
+            st.caption(esc(f"SG: A${m1_sg:,.0f}") + (" (自雇=0)" if so["m1_self_employed"] else f" ({SG_RATE*100:.1f}%)"))
 
     with c2:
         st.markdown(f"**{so['m2_name']}**")
@@ -945,8 +950,8 @@ def page_super():
         so["m2_sg"] = m2_sg
         so["m2_income"] = m2_income
         if len(incomes) > 1:
-            st.caption(f"🔗 {incomes[1]['name']}: A${m2_income:,.0f}")
-            st.caption(f"SG: A${m2_sg:,.0f}" + (" (自雇=0)" if so["m2_self_employed"] else f" ({SG_RATE*100:.1f}%)"))
+            st.caption(esc(f"🔗 {incomes[1]['name']}: A${m2_income:,.0f}"))
+            st.caption(esc(f"SG: A${m2_sg:,.0f}") + (" (自雇=0)" if so["m2_self_employed"] else f" ({SG_RATE*100:.1f}%)"))
 
     CC_CAP, NCC_CAP, NCC_BF = 30000, 120000, 360000
     st.divider()
@@ -1097,7 +1102,7 @@ def page_currency():
 def page_settings():
     d = st.session_state.data
     st.subheader(t("language"))
-    lang_map = {"中文": "zh", "English": "en"}
+    lang_map = {"English": "en", "中文": "zh"}
     sel = st.selectbox(t("language"), list(lang_map.keys()),
         index=list(lang_map.values()).index(d["lang"]), key="set_lang")
     if lang_map[sel] != d["lang"]:
@@ -1132,7 +1137,7 @@ def page_settings():
     with c3:
         if st.button(t("reset_data")):
             st.session_state.data = get_default_data()
-            st.session_state.lang = "zh"
+            st.session_state.lang = "en"
             for k in list(st.session_state.keys()):
                 if k.startswith(("pv_","pm_","sv_","ov_","ia_","ea_","so_","mc_","r_","_data_")):
                     del st.session_state[k]
@@ -1177,9 +1182,9 @@ def main():
     init_data()
     d = st.session_state.data
     with st.sidebar:
-        st.title("💰 Wealth Manager" if st.session_state.lang == "en" else "💰 个人资产管理")
-        lang_opts = ["中文", "English"]
-        lang_sel = st.selectbox("🌐", lang_opts, index=0 if st.session_state.lang == "zh" else 1,
+        st.title(t("login_title"))
+        lang_opts = ["English", "中文"]
+        lang_sel = st.selectbox("🌐", lang_opts, index=0 if st.session_state.lang == "en" else 1,
             key="sb_lang", label_visibility="collapsed")
         lc = "zh" if lang_sel == "中文" else "en"
         if lc != st.session_state.lang:
