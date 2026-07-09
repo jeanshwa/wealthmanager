@@ -107,32 +107,32 @@
       "annual": 68885
     },
     {
-      "name": "🍽️ Livings expenses",
-      "annual": 60000
+      "name": "🍽️ Fixed items: council, water, phone, internet, electricity, gas",
+      "annual": 17260
     },
     {
-      "name": "🎓 Children",
-      "annual": 0
+      "name": "🎓 School, activities",
+      "annual": 32140
     },
     {
-      "name": "🏥 Health insurance",
-      "annual": 0
+      "name": "🏥 Insurance (excluding business)",
+      "annual": 10800
     },
     {
-      "name": "🚗 Transport",
-      "annual": 15000
+      "name": "🚗 Car & transport",
+      "annual": 8000
     },
     {
       "name": "✈️ Holiday",
-      "annual": 0
+      "annual": 50000
     },
     {
-      "name": "📋 Insurance",
-      "annual": 0
+      "name": "📋 Business fixed",
+      "annual": 19220
     },
     {
-      "name": "📦 其他",
-      "annual": 0
+      "name": "📦Shopping, grocery, food and etc",
+      "annual": 36000
     }
   ],
   "retirement": {

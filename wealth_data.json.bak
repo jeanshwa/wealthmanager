@@ -14,7 +14,7 @@
       "mortgage": 1150000,
       "interest_rate": 5.99,
       "loan_years": 29,
-      "monthly_repay": 6973.231272744731
+      "monthly_repay": 5740.416666666667
     },
     {
       "name": "3001",
@@ -104,35 +104,35 @@
   "expenses": [
     {
       "name": "🏠 房贷还款",
-      "annual": 83679
+      "annual": 68885
     },
     {
-      "name": "🍽️ 日常生活",
-      "annual": 60000
+      "name": "🍽️ Fixed items: council, water, phone, internet, electricity, gas",
+      "annual": 17260
     },
     {
-      "name": "🎓 子女教育",
+      "name": "🎓 School, activities",
+      "annual": 32140
+    },
+    {
+      "name": "🏥 Insurance (excluding business)",
+      "annual": 10800
+    },
+    {
+      "name": "🚗 Car & transport",
+      "annual": 8000
+    },
+    {
+      "name": "✈️ Holiday",
       "annual": 0
     },
     {
-      "name": "🏥 私人医保",
-      "annual": 0
+      "name": "📋 Business fixed",
+      "annual": 19220
     },
     {
-      "name": "🚗 交通/车",
-      "annual": 15000
-    },
-    {
-      "name": "✈️ 旅行/机票",
-      "annual": 0
-    },
-    {
-      "name": "📋 保险",
-      "annual": 0
-    },
-    {
-      "name": "📦 其他",
-      "annual": 0
+      "name": "📦Shopping, grocery, food and etc",
+      "annual": 36000
     }
   ],
   "retirement": {

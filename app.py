@@ -382,6 +382,7 @@ def load_from_localstorage():
         pass
     return None
 
+@st.cache_data(ttl=14400, show_spinner=False)  # Cache 4 hours
 def _try_fetch_fx():
     """Try to fetch live FX rates. Returns dict or None."""
     # Try Yahoo Finance (one by one to avoid rate limits)
@@ -392,7 +393,7 @@ def _try_fetch_fx():
         for cur, ticker in tickers.items():
             try:
                 import time
-                time.sleep(0.3)
+                time.sleep(1.5)
                 data = yf.download(ticker, period="5d", progress=False, auto_adjust=False)
                 if not data.empty:
                     result[cur] = data["Close"].dropna().iloc[-1].item()
@@ -451,7 +452,7 @@ def init_data():
             o.setdefault("annual_return", 0.0)
         st.session_state.data = loaded
     if "lang" not in st.session_state:
-        st.session_state.lang = st.session_state.data.get("lang", "zh")
+        st.session_state.lang = st.session_state.data.get("lang", "en")
     if not st.session_state.get("_fx_auto_fetched"):
         live = fetch_live_fx()
         if live:
@@ -689,14 +690,14 @@ def page_assets():
             props_rm.append(i)
         # Row 2: Mortgage details
         c1, c2, c3, c4 = st.columns([1, 2, 1, 2])
-        c1.caption(t('mortgage'))
+        c1.markdown(f"<div style='display:flex;align-items:center;height:56px;font-size:13px;color:#8b949e'>{t('mortgage')}</div>", unsafe_allow_html=True)
         p["mortgage"] = money_input("", p["mortgage"], f"pm_{i}", container=c2)
         p["interest_rate"] = c3.number_input("Rate%", value=p.get("interest_rate", 6.0),
             step=0.1, format="%.2f", key=f"pir_{i}", label_visibility="collapsed")
         auto_repay = calc_monthly_repayment(p["mortgage"], p["interest_rate"])
         p["monthly_repay"] = auto_repay
-        sym = esc(CUR_SYMBOLS[p['currency']])
-        c4.caption(f"{sym}{auto_repay:,.0f}/mo · {t('equity')}: {sym}{p['value']-p['mortgage']:,.0f}")
+        sym = CUR_SYMBOLS[p['currency']]
+        c4.markdown(f"<div style='display:flex;align-items:center;height:56px;font-size:13px;color:#8b949e'>{sym}{auto_repay:,.0f}/mo · {t('equity')}: {sym}{p['value']-p['mortgage']:,.0f}</div>", unsafe_allow_html=True)
         st.divider()
     for i in sorted(props_rm, reverse=True):
         d["properties"].pop(i); st.rerun()
