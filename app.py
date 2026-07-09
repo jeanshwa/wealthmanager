@@ -139,6 +139,13 @@ TR = {
     "import_data": {"zh": "📂 导入数据", "en": "📂 Import Data"},
     "reset_data": {"zh": "🗑️ 重置所有数据", "en": "🗑️ Reset All Data"},
     "about": {"zh": "关于", "en": "About"},
+    "biz_section": {"zh": "🏢 Business", "en": "🏢 Business"},
+    "biz_gross": {"zh": "年营业额 (含GST)", "en": "Annual Gross Revenue (incl GST)"},
+    "gst_rate": {"zh": "GST税率 %", "en": "GST Rate %"},
+    "after_gst": {"zh": "扣除GST后", "en": "After GST"},
+    "total_salaries": {"zh": "已发工资总额", "en": "Total Salaries Paid"},
+    "biz_expense_budget": {"zh": "可用于经营支出", "en": "Available for Business Expenses"},
+    "personal_salary": {"zh": "💡 以下为从公司支取的个人工资/drawings，税务按此计算", "en": "💡 Below are personal salaries/drawings from the business — tax is calculated on these"},
     "currency_label": {"zh": "货币", "en": "Currency"},
     "return_pct": {"zh": "回报%", "en": "Return%"},
     "add_income": {"zh": "＋ 添加收入", "en": "＋ Add Income"},
@@ -278,10 +285,13 @@ def get_default_data():
             {"name": "个人 ETF (super外)", "value": 0, "currency": "USD", "annual_return": 7.0},
             {"name": "其他资产", "value": 0, "currency": "AUD", "annual_return": 0.0},
         ],
+        "business": {
+            "gross_revenue": 0, "gst_rate": 10.0,
+        },
         "income": [
-            {"name": "Practice 收入 (本人)", "amount": 0, "currency": "AUD"},
-            {"name": "配偶工资", "amount": 0, "currency": "AUD"},
-            {"name": "Office 租金 (Super Fund内)", "amount": 0, "currency": "AUD"},
+            {"name": "Salary — Self", "amount": 0, "currency": "AUD"},
+            {"name": "Salary — Spouse", "amount": 0, "currency": "AUD"},
+            {"name": "Office Rent (in Super Fund)", "amount": 0, "currency": "AUD"},
         ],
         "expenses": [
             {"name": "🏠 房贷还款", "annual": 0},
@@ -511,11 +521,23 @@ def calc_passive_income(d):
 
 def calc_cashflow(d):
     fx = d["fx_rates"]
-    gross = sum(to_aud(i["amount"], i["currency"], fx) for i in d["income"])
+    # Personal salaries
+    personal_gross = sum(to_aud(i["amount"], i["currency"], fx) for i in d["income"])
     tax = sum(au_income_tax(max(to_aud(i["amount"], i["currency"], fx), 0)) for i in d["income"] if i["amount"] > 0)
-    after_tax = gross - tax
+    personal_after_tax = personal_gross - tax
+    # Business budget (after GST, minus salaries and super already paid)
+    biz = d.get("business", {})
+    biz_gross = biz.get("gross_revenue", 0)
+    gst = biz_gross * biz.get("gst_rate", 10.0) / 100
+    # Super payable by business (11.5% on all salaries)
+    SG_RATE = 0.115
+    super_payable = personal_gross * SG_RATE
+    biz_budget = biz_gross - gst - personal_gross - super_payable
+    # Total available = personal after tax + business budget
+    total_available = personal_after_tax + max(biz_budget, 0)
     total_exp = sum(e["annual"] for e in d["expenses"])
-    return gross, tax, after_tax, total_exp, after_tax - total_exp
+    surplus = total_available - total_exp
+    return personal_gross, tax, personal_after_tax, total_exp, surplus, max(biz_budget, 0)
 
 def project_retirement(d):
     r = d["retirement"]
@@ -609,7 +631,7 @@ def check_password():
 def page_dashboard():
     d = st.session_state.data
     total_a, total_l, nw, breakdown = calc_net_worth(d)
-    gross, tax, after_tax, total_exp, surplus = calc_cashflow(d)
+    gross, tax, after_tax, total_exp, surplus, biz_budget = calc_cashflow(d)
     acc, draw, cap_retire, annual_exp_ret, deplete_age, passive = project_retirement(d)
     dc = d["display_currency"]
     fx = d["fx_rates"]
@@ -763,9 +785,33 @@ def page_assets():
 def page_cashflow():
     d = st.session_state.data
     dc = d["display_currency"]
-    # Income
+    d.setdefault("business", {"gross_revenue": 0, "gst_rate": 10.0})
+    biz = d["business"]
+
+    # ── Business ──
+    st.subheader(t("biz_section"))
+    c1, c2 = st.columns(2)
+    biz["gross_revenue"] = money_input(t("biz_gross"), biz["gross_revenue"], "biz_gross")
+    biz["gst_rate"] = c2.number_input(t("gst_rate"), value=biz.get("gst_rate", 10.0),
+        step=0.5, format="%.1f", key="biz_gst")
+    gst_amount = biz["gross_revenue"] * biz["gst_rate"] / 100
+    after_gst = biz["gross_revenue"] - gst_amount
+    total_salaries = sum(i["amount"] for i in d["income"])
+    # Super payable by business (11.5% on all salaries)
+    SG_RATE = 0.115
+    super_payable = total_salaries * SG_RATE
+    total_cost_to_biz = total_salaries + super_payable
+    biz_expenses_budget = after_gst - total_cost_to_biz
+
+    c1, c2, c3 = st.columns(3)
+    c1.metric(t("after_gst"), fmt_cur(after_gst, "AUD"), f"GST: {fmt_cur(gst_amount, 'AUD')}")
+    c2.metric(t("total_salaries"), fmt_cur(total_cost_to_biz, "AUD"),
+        f"Super: {fmt_cur(super_payable, 'AUD')}" if super_payable > 0 else None)
+    c3.metric(t("biz_expense_budget"), fmt_cur(biz_expenses_budget, "AUD"))
+
+    # ── Personal Income (salaries/drawings from business) ──
     st.subheader(t("income"))
-    st.caption("💡 " + ("所有金额为年度税前总额" if st.session_state.lang == "zh" else "All amounts are annual gross (before tax)"))
+    st.caption(t("personal_salary"))
     inc_rm = []
     for i, inc in enumerate(d["income"]):
         c1, c2, c3, c4, c5 = st.columns([1, 3, 2.5, 1.2, 0.5])
@@ -773,7 +819,7 @@ def page_cashflow():
             key=f"ic_{i}", label_visibility="collapsed", format_func=lambda x: f"{CUR_FLAGS[x]}")
         inc["name"] = c2.text_input("name", inc["name"], key=f"in_{i}", label_visibility="collapsed")
         inc["amount"] = money_input("", inc["amount"], f"ia_{i}", container=c3)
-        c4.caption(f"{esc(CUR_SYMBOLS.get(inc['currency'],'A$'))}{inc['amount']/12:,.0f}/mo")
+        c4.caption(esc(f"{CUR_SYMBOLS.get(inc['currency'],'A$')}{inc['amount']/12:,.0f}/mo"))
         if c5.button("✕", key=f"irm_{i}"):
             inc_rm.append(i)
     for i in sorted(inc_rm, reverse=True):
@@ -810,13 +856,14 @@ def page_cashflow():
 
     # Summary
     st.divider()
-    gross, tax, after_tax, total_exp, surplus = calc_cashflow(d)
+    gross, tax, after_tax, total_exp, surplus, biz_budget = calc_cashflow(d)
+    total_available = after_tax + biz_budget
     c1, c2, c3, c4 = st.columns(4)
-    c1.metric(t("gross_income"), fmt_cur(gross, "AUD"))
-    c2.metric(t("after_tax"), fmt_cur(after_tax, "AUD"), f"{t('tax_label')} {fmt_cur(tax, 'AUD')}")
+    c1.metric(t("gross_income"), fmt_cur(gross, "AUD"), f"{t('tax_label')} {fmt_cur(tax, 'AUD')}")
+    c2.metric(t("biz_expense_budget"), fmt_cur(biz_budget, "AUD"))
     c3.metric(t("total_expenses"), fmt_cur(total_exp, "AUD"))
     c4.metric(t("net_surplus"), fmt_cur(surplus, "AUD"),
-        f"{t('savings_rate')} {surplus/after_tax*100:.0f}%" if after_tax > 0 else "—")
+        f"{t('savings_rate')} {surplus/total_available*100:.0f}%" if total_available > 0 else "—")
     # Waterfall
     st.subheader(t("waterfall"))
     labels, values = [t("gross_income"), t("tax_label")], [gross, -tax]

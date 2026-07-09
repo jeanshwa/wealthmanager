@@ -87,17 +87,12 @@
   "income": [
     {
       "name": "My salary",
-      "amount": 75000,
+      "amount": 30000,
       "currency": "AUD"
     },
     {
       "name": "partner salary",
-      "amount": 75000,
-      "currency": "AUD"
-    },
-    {
-      "name": "Business income",
-      "amount": 0,
+      "amount": 30000,
       "currency": "AUD"
     }
   ],
@@ -132,7 +127,7 @@
     },
     {
       "name": "📦Shopping, grocery, food and etc",
-      "annual": 30000
+      "annual": 36000
     }
   ],
   "retirement": {
@@ -155,10 +150,10 @@
     "m2_name": "配偶",
     "m1_balance": 60000,
     "m2_balance": 30000,
-    "m1_sg": 3680,
-    "m2_sg": 3680,
-    "m1_income": 32000,
-    "m2_income": 32000,
+    "m1_sg": 3450,
+    "m2_sg": 3450,
+    "m1_income": 30000,
+    "m2_income": 30000,
     "m1_self_employed": false,
     "m2_self_employed": false
   },
@@ -170,5 +165,9 @@
     "volatility": 12.0,
     "inflation": 2.5,
     "num_sims": 5000
+  },
+  "business": {
+    "gross_revenue": 180000,
+    "gst_rate": 10.0
   }
 }
