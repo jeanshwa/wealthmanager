@@ -156,9 +156,9 @@
     "m1_balance": 0,
     "m2_balance": 0,
     "m1_sg": 0,
-    "m2_sg": 0,
-    "m1_income": 0,
-    "m2_income": 0,
+    "m2_sg": 3680,
+    "m1_income": 32000,
+    "m2_income": 32000,
     "m1_self_employed": true,
     "m2_self_employed": false
   },

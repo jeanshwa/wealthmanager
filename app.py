@@ -225,11 +225,12 @@ def t(key):
 # ================================================================
 # UI HELPERS
 # ================================================================
-def money_input(label, value, key, container=None):
+def money_input(label, value, key, container=None, placeholder=None):
     """Reliable number input using Streamlit's native widget"""
     ctx = container or st
-    result = ctx.number_input(label, value=int(value), step=10000, min_value=0, key=key,
-        format="%d", label_visibility="collapsed" if not label else "visible")
+    vis = "collapsed" if not label else "visible"
+    result = ctx.number_input(label or "val", value=int(value), step=10000, min_value=0, key=key,
+        format="%d", label_visibility=vis, placeholder=placeholder)
     return result
 
 def calc_monthly_repayment(principal, annual_rate_pct, years):
@@ -322,7 +323,7 @@ def save_data():
     try:
         with open(DATA_FILE, "w", encoding="utf-8") as f:
             json.dump(d, f, ensure_ascii=False, indent=2)
-        st.session_state._last_saved = datetime.now().strftime("%H:%M:%S")
+        st.session_state._last_saved = datetime.now().astimezone().strftime("%H:%M:%S %Z")
         st.session_state._save_error = None
     except Exception as e:
         st.session_state._save_error = str(e)
@@ -375,9 +376,9 @@ def load_from_localstorage():
         pass
     return None
 
-@st.cache_data(ttl=3600, show_spinner=False)
-def _fetch_fx_cached():
-    # Try Yahoo Finance first
+def _try_fetch_fx():
+    """Try to fetch live FX rates. Returns dict or None."""
+    # Try Yahoo Finance (one by one to avoid rate limits)
     try:
         import yfinance as yf
         tickers = {"USD": "AUDUSD=X", "CNY": "AUDCNY=X", "HKD": "AUDHKD=X"}
@@ -385,36 +386,45 @@ def _fetch_fx_cached():
         for cur, ticker in tickers.items():
             try:
                 import time
-                time.sleep(0.5)  # Avoid rate limiting
+                time.sleep(0.3)
                 data = yf.download(ticker, period="5d", progress=False, auto_adjust=False)
                 if not data.empty:
-                    price = data["Close"].dropna().iloc[-1].item()
-                    result[cur] = round(price, 6)
+                    result[cur] = data["Close"].dropna().iloc[-1].item()
             except Exception:
                 pass
-        if result:
-            return result
+        if len(result) == 3:
+            return {k: round(v, 6) for k, v in result.items()}
     except Exception:
         pass
-    # Fallback: free API (no key needed)
+    # Fallback: free API
     try:
         import urllib.request, json as _json
-        url = "https://open.er-api.com/v6/latest/AUD"
-        with urllib.request.urlopen(url, timeout=10) as resp:
+        with urllib.request.urlopen("https://open.er-api.com/v6/latest/AUD", timeout=10) as resp:
             data = _json.loads(resp.read())
             if data.get("result") == "success":
-                rates = data["rates"]
-                return {
-                    "USD": round(rates.get("USD", 0.645), 6),
-                    "CNY": round(rates.get("CNY", 4.72), 4),
-                    "HKD": round(rates.get("HKD", 5.04), 4),
-                }
+                r = data["rates"]
+                return {"USD": round(r["USD"], 6), "CNY": round(r["CNY"], 4), "HKD": round(r["HKD"], 4)}
     except Exception:
         pass
     return None
 
 def fetch_live_fx():
-    return _fetch_fx_cached()
+    """Fetch fresh FX rates. On failure, return last good rates from saved data."""
+    live = _try_fetch_fx()
+    if live:
+        return live
+    # Fallback: load last saved rates from JSON file
+    try:
+        if os.path.exists(DATA_FILE):
+            with open(DATA_FILE, "r", encoding="utf-8") as f:
+                saved = json.load(f)
+            saved_fx = saved.get("fx_rates", {})
+            if saved_fx.get("USD") and saved_fx.get("CNY") and saved_fx.get("HKD"):
+                return saved_fx
+    except Exception:
+        pass
+    # Last resort: hardcoded defaults
+    return {"USD": 0.645, "CNY": 4.72, "HKD": 5.04}
 
 def init_data():
     if "data" not in st.session_state:
@@ -658,84 +668,90 @@ def page_dashboard():
 def page_assets():
     d = st.session_state.data
     fx, dc = d["fx_rates"], d["display_currency"]
-    # Properties
+
+    # ── Properties ──
     st.subheader(t("properties"))
     props_rm = []
     for i, p in enumerate(d["properties"]):
-        with st.expander(p["name"], expanded=True):
-            c1, c2 = st.columns([3, 1])
-            p["name"] = c1.text_input(t("name"), p["name"], key=f"pn_{i}")
-            p["currency"] = c2.selectbox(t("currency_label"), CURRENCIES, index=CURRENCIES.index(p["currency"]), key=f"pc_{i}",
-                format_func=lambda x: f"{CUR_FLAGS[x]} {x}")
-            c1, c2 = st.columns(2)
-            p["value"] = money_input(t("market_value"), p["value"], f"pv_{i}")
-            p["mortgage"] = money_input(t("mortgage"), p["mortgage"], f"pm_{i}")
-            c1, c2, c3 = st.columns(3)
-            p["interest_rate"] = c1.number_input(t("interest_rate"), value=p.get("interest_rate", 6.0),
-                step=0.1, format="%.2f", key=f"pir_{i}")
-            p["loan_years"] = c2.number_input(t("loan_years"), value=p.get("loan_years", 25),
-                min_value=1, max_value=40, key=f"ply_{i}")
-            auto_repay = calc_monthly_repayment(p["mortgage"], p["interest_rate"], p["loan_years"])
-            p["monthly_repay"] = auto_repay
-            c3.metric(t("monthly_repay"), f"{CUR_SYMBOLS[p['currency']]}{auto_repay:,.0f}")
-            equity = p["value"] - p["mortgage"]
-            st.caption(f"{t('equity')}: {CUR_SYMBOLS[p['currency']]}{equity:,.0f} → {fmt_cur(to_display(equity, p['currency'], dc, fx), dc)}")
-            if st.button(t("remove"), key=f"prm_{i}"):
-                props_rm.append(i)
+        # Row 1: Currency, Name, Value, Delete
+        c1, c2, c3, c4 = st.columns([1, 3, 2, 0.4])
+        p["currency"] = c1.selectbox("ccy", CURRENCIES, index=CURRENCIES.index(p["currency"]),
+            key=f"pc_{i}", format_func=lambda x: f"{CUR_FLAGS[x]}", label_visibility="collapsed")
+        p["name"] = c2.text_input("name", p["name"], key=f"pn_{i}", label_visibility="collapsed")
+        p["value"] = money_input("", p["value"], f"pv_{i}", container=c3)
+        if c4.button("✕", key=f"prm_{i}"):
+            props_rm.append(i)
+        # Row 2: Mortgage details (indented)
+        c1, c2, c3, c4, c5 = st.columns([1, 2, 1, 0.8, 1.5])
+        c1.markdown(f"<span style='font-size:13px;color:#8b949e'>{t('mortgage')}</span>", unsafe_allow_html=True)
+        p["mortgage"] = money_input("", p["mortgage"], f"pm_{i}", container=c2)
+        p["interest_rate"] = c3.number_input("Rate%", value=p.get("interest_rate", 6.0),
+            step=0.1, format="%.2f", key=f"pir_{i}", label_visibility="collapsed")
+        p["loan_years"] = c4.number_input("Yrs", value=p.get("loan_years", 25),
+            min_value=0, max_value=40, key=f"ply_{i}", label_visibility="collapsed")
+        auto_repay = calc_monthly_repayment(p["mortgage"], p["interest_rate"], p["loan_years"])
+        p["monthly_repay"] = auto_repay
+        c5.markdown(f"<span style='font-size:13px;color:#8b949e'>{CUR_SYMBOLS[p['currency']]}{auto_repay:,.0f}/mo · {t('equity')}: {CUR_SYMBOLS[p['currency']]}{p['value']-p['mortgage']:,.0f}</span>", unsafe_allow_html=True)
+        st.divider()
     for i in sorted(props_rm, reverse=True):
         d["properties"].pop(i); st.rerun()
     if st.button(t("add_property")):
-        d["properties"].append({"name": t("new_property"), "value": 0, "currency": "AUD", "mortgage": 0,
-            "interest_rate": 6.0, "loan_years": 25, "monthly_repay": 0}); st.rerun()
+        d["properties"].append({"name": t("new_property"), "value": 0, "currency": "AUD",
+            "mortgage": 0, "interest_rate": 6.0, "loan_years": 25, "monthly_repay": 0}); st.rerun()
 
-    # Super Fund
+    # ── Super Fund ──
     st.subheader(t("super_fund"))
+    sf_rm = []
     for i, s in enumerate(d["super_fund"]):
-        c1, c2, c3 = st.columns([1, 3, 2])
-        s["currency"] = c1.selectbox(f"{CUR_FLAGS.get(s['currency'],'')}",
-            CURRENCIES, index=CURRENCIES.index(s["currency"]), key=f"sc_{i}")
-        s["name"] = c2.text_input(t("name"), s["name"], key=f"sn_{i}")
-        s["value"] = money_input(t("market_value"), s["value"], f"sv_{i}")
+        c1, c2, c3, c4 = st.columns([1, 3, 2, 0.4])
+        s["currency"] = c1.selectbox("ccy", CURRENCIES, index=CURRENCIES.index(s["currency"]),
+            key=f"sc_{i}", format_func=lambda x: f"{CUR_FLAGS[x]}", label_visibility="collapsed")
+        s["name"] = c2.text_input("name", s["name"], key=f"sn_{i}", label_visibility="collapsed")
+        s["value"] = money_input("", s["value"], f"sv_{i}", container=c3)
+        if c4.button("✕", key=f"srm_{i}"):
+            sf_rm.append(i)
+    for i in sorted(sf_rm, reverse=True):
+        d["super_fund"].pop(i); st.rerun()
     sf_aud = sum(to_aud(s["value"], s["currency"], fx) for s in d["super_fund"])
-    st.caption(f"{t('sf_total_label')}: {fmt_cur(to_display(sf_aud, 'AUD', dc, fx), dc)}")
-    if st.button(t("add_super_item")):
+    c1, c2 = st.columns(2)
+    if c1.button(t("add_super_item")):
         d["super_fund"].append({"name": t("new_item"), "value": 0, "currency": "AUD"}); st.rerun()
+    c2.caption(f"{t('sf_total_label')}: {fmt_cur(to_display(sf_aud, 'AUD', dc, fx), dc)}")
 
-    # Other assets
+    # ── Cash & Other ──
     st.subheader(t("cash_other"))
     others_rm = []
     for i, o in enumerate(d["other_assets"]):
-        c1, c2, c3, c4, c5 = st.columns([1, 2.5, 2, 1, 0.5])
-        o["currency"] = c1.selectbox(f"{CUR_FLAGS.get(o['currency'],'')}",
-            CURRENCIES, index=CURRENCIES.index(o["currency"]), key=f"oc_{i}")
-        o["name"] = c2.text_input(t("name"), o["name"], key=f"on_{i}")
-        o["value"] = money_input(t("market_value"), o["value"], f"ov_{i}")
-        o["annual_return"] = c4.number_input(t("return_pct"), value=o.get("annual_return", 0.0),
-            step=0.5, format="%.1f", key=f"oar_{i}")
+        c1, c2, c3, c4, c5 = st.columns([1, 3, 2, 0.8, 0.4])
+        o["currency"] = c1.selectbox("ccy", CURRENCIES, index=CURRENCIES.index(o["currency"]),
+            key=f"oc_{i}", format_func=lambda x: f"{CUR_FLAGS[x]}", label_visibility="collapsed")
+        o["name"] = c2.text_input("name", o["name"], key=f"on_{i}", label_visibility="collapsed")
+        o["value"] = money_input("", o["value"], f"ov_{i}", container=c3)
+        o["annual_return"] = c4.number_input("Ret%", value=o.get("annual_return", 0.0),
+            step=0.5, format="%.1f", key=f"oar_{i}", label_visibility="collapsed")
         if c5.button("✕", key=f"orm_{i}"):
             others_rm.append(i)
     for i in sorted(others_rm, reverse=True):
         d["other_assets"].pop(i); st.rerun()
-    if st.button(t("add_asset")):
-        d["other_assets"].append({"name": t("new_asset"), "value": 0, "currency": "AUD", "annual_return": 0.0}); st.rerun()
-    # Passive income summary
     passive = calc_passive_income(d)
+    c1, c2 = st.columns(2)
+    if c1.button(t("add_asset")):
+        d["other_assets"].append({"name": t("new_asset"), "value": 0, "currency": "AUD", "annual_return": 0.0}); st.rerun()
     if passive > 0:
-        st.success(f"{t('passive_income')}: {fmt_cur(passive, 'AUD')}{t('passive_auto_note')}")
+        c2.caption(f"📈 {t('passive_income')}: {fmt_cur(passive, 'AUD')}/yr")
 
-    # Summary
+    # ── Summary ──
     st.divider()
     total_a, total_l, nw, _ = calc_net_worth(d)
-    c1, c2 = st.columns([3, 1])
-    with c2:
-        new_dc = st.selectbox(t("display_cur"), CURRENCIES, index=CURRENCIES.index(dc), key="asset_dc",
-            format_func=lambda x: f"{CUR_FLAGS[x]} {x}")
-        if new_dc != dc: d["display_currency"] = new_dc; st.rerun()
+    c1, c2 = st.columns([4, 1])
     with c1:
         fx_str = " · ".join([f"AUD/{k} {v}" for k, v in fx.items()])
         st.caption(f"{t('fx_label')}: {fx_str}")
-        st.markdown(f"### {t('total_assets')} {fmt_cur(total_a, dc)} − {t('total_liabilities')} {fmt_cur(total_l, dc)} = **{fmt_cur(nw, dc)}**")
-    st.success(t("auto_saved"))
+        st.markdown(f"**{fmt_cur(total_a, dc)}** − {fmt_cur(total_l, dc)} = **{fmt_cur(nw, dc)}**")
+    with c2:
+        new_dc = st.selectbox(t("display_cur"), CURRENCIES, index=CURRENCIES.index(dc), key="asset_dc",
+            format_func=lambda x: f"{CUR_FLAGS[x]}", label_visibility="collapsed")
+        if new_dc != dc: d["display_currency"] = new_dc; st.rerun()
 
 
 def page_cashflow():
@@ -743,14 +759,16 @@ def page_cashflow():
     dc = d["display_currency"]
     # Income
     st.subheader(t("income"))
+    st.caption("💡 " + ("所有金额为年度税前总额" if st.session_state.lang == "zh" else "All amounts are annual gross (before tax)"))
     inc_rm = []
     for i, inc in enumerate(d["income"]):
-        c1, c2, c3, c4 = st.columns([1, 4, 3, 0.6])
-        inc["currency"] = c1.selectbox(f"{CUR_FLAGS.get(inc['currency'],'')}",
-            CURRENCIES, index=CURRENCIES.index(inc["currency"]), key=f"ic_{i}", label_visibility="collapsed")
-        inc["name"] = c2.text_input(t("name"), inc["name"], key=f"in_{i}", label_visibility="collapsed")
+        c1, c2, c3, c4, c5 = st.columns([1, 3, 2.5, 1.2, 0.5])
+        inc["currency"] = c1.selectbox("ccy", CURRENCIES, index=CURRENCIES.index(inc["currency"]),
+            key=f"ic_{i}", label_visibility="collapsed", format_func=lambda x: f"{CUR_FLAGS[x]}")
+        inc["name"] = c2.text_input("name", inc["name"], key=f"in_{i}", label_visibility="collapsed")
         inc["amount"] = money_input("", inc["amount"], f"ia_{i}", container=c3)
-        if c4.button("✕", key=f"irm_{i}"):
+        c4.markdown(f"<span style='font-size:13px;color:#8b949e'>{CUR_SYMBOLS.get(inc['currency'],'$')}{inc['amount']/12:,.0f}/mo</span>", unsafe_allow_html=True)
+        if c5.button("✕", key=f"irm_{i}"):
             inc_rm.append(i)
     for i in sorted(inc_rm, reverse=True):
         d["income"].pop(i); st.rerun()
@@ -1036,8 +1054,7 @@ def page_currency():
     cb, cs = st.columns([1, 3])
     with cb:
         if st.button(t("fetch_fx"), type="primary"):
-            _fetch_fx_cached.clear()
-            live = fetch_live_fx()
+            live = _try_fetch_fx()
             if live: fx.update(live); st.session_state._fx_ok = True; st.rerun()
             else: st.session_state._fx_err = True
     with cs:
@@ -1083,7 +1100,7 @@ def page_settings():
         d["lang"] = lang_map[sel]; st.session_state.lang = lang_map[sel]; st.rerun()
     st.subheader(t("display_currency_setting"))
     ndc = st.selectbox(t("display_currency_setting"), CURRENCIES, index=CURRENCIES.index(d["display_currency"]),
-        key="set_dc", format_func=lambda x: f"{CUR_FLAGS[x]} {x}")
+        key="set_dc", format_func=lambda x: f"{CUR_FLAGS[x]}")
     if ndc != d["display_currency"]: d["display_currency"] = ndc; st.rerun()
 
     st.divider()
@@ -1171,7 +1188,7 @@ def main():
         active = pages[sel]
         st.divider()
         st.caption("⚠️ " + t("not_financial_advice"))
-        st.caption(f"💾 {t('auto_saved')}")
+        st.caption(t('auto_saved'))
         if st.session_state.get("_last_saved"):
             st.caption(f"✅ {st.session_state._last_saved}")
         if st.session_state.get("_save_error"):
