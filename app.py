@@ -233,13 +233,11 @@ def money_input(label, value, key, container=None, placeholder=None):
         format="%d", label_visibility=vis, placeholder=placeholder)
     return result
 
-def calc_monthly_repayment(principal, annual_rate_pct, years):
-    """Standard mortgage amortization formula"""
-    if principal <= 0 or annual_rate_pct <= 0 or years <= 0:
+def calc_monthly_repayment(principal, annual_rate_pct):
+    """Simple monthly interest = principal * annual_rate / 12"""
+    if principal <= 0 or annual_rate_pct <= 0:
         return 0
-    r = annual_rate_pct / 100 / 12
-    n = int(years * 12)
-    return principal * (r * (1 + r)**n) / ((1 + r)**n - 1)
+    return principal * annual_rate_pct / 100 / 12
 
 def fmt_cur(amount, cur=None):
     if cur is None:
@@ -689,18 +687,16 @@ def page_assets():
         p["value"] = money_input("", p["value"], f"pv_{i}", container=c3)
         if c4.button("✕", key=f"prm_{i}"):
             props_rm.append(i)
-        # Row 2: Mortgage details (indented)
-        c1, c2, c3, c4, c5 = st.columns([1, 2, 1, 0.8, 1.5])
+        # Row 2: Mortgage details
+        c1, c2, c3, c4 = st.columns([1, 2, 1, 2])
         c1.caption(t('mortgage'))
         p["mortgage"] = money_input("", p["mortgage"], f"pm_{i}", container=c2)
         p["interest_rate"] = c3.number_input("Rate%", value=p.get("interest_rate", 6.0),
             step=0.1, format="%.2f", key=f"pir_{i}", label_visibility="collapsed")
-        p["loan_years"] = c4.number_input("Yrs", value=p.get("loan_years", 25),
-            min_value=0, max_value=40, key=f"ply_{i}", label_visibility="collapsed")
-        auto_repay = calc_monthly_repayment(p["mortgage"], p["interest_rate"], p["loan_years"])
+        auto_repay = calc_monthly_repayment(p["mortgage"], p["interest_rate"])
         p["monthly_repay"] = auto_repay
         sym = esc(CUR_SYMBOLS[p['currency']])
-        c5.caption(f"{sym}{auto_repay:,.0f}/mo · {t('equity')}: {sym}{p['value']-p['mortgage']:,.0f}")
+        c4.caption(f"{sym}{auto_repay:,.0f}/mo · {t('equity')}: {sym}{p['value']-p['mortgage']:,.0f}")
         st.divider()
     for i in sorted(props_rm, reverse=True):
         d["properties"].pop(i); st.rerun()

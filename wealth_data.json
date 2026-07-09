@@ -11,17 +11,17 @@
       "name": "hastings",
       "value": 7000000,
       "currency": "AUD",
-      "mortgage": 1100000,
+      "mortgage": 1150000,
       "interest_rate": 5.99,
       "loan_years": 29,
-      "monthly_repay": 6670.047304364525
+      "monthly_repay": 6973.231272744731
     },
     {
       "name": "3001",
       "value": 2000000,
       "currency": "CNY",
       "mortgage": 0,
-      "interest_rate": 3.5,
+      "interest_rate": 0.0,
       "loan_years": 20,
       "monthly_repay": 0
     },
@@ -30,7 +30,7 @@
       "value": 2500000,
       "currency": "AUD",
       "mortgage": 0,
-      "interest_rate": 6.0,
+      "interest_rate": 0.0,
       "loan_years": 25,
       "monthly_repay": 0
     }
@@ -54,19 +54,19 @@
   ],
   "other_assets": [
     {
-      "name": "au",
+      "name": "savings",
       "value": 0,
       "currency": "AUD",
       "annual_return": 4.0
     },
     {
-      "name": "中国银行存款",
+      "name": "alipay",
       "value": 15000,
       "currency": "CNY",
       "annual_return": 1.0
     },
     {
-      "name": "香港账户",
+      "name": "hsbc hk",
       "value": 7000,
       "currency": "HKD",
       "annual_return": 0.0
@@ -75,7 +75,7 @@
       "name": "equity",
       "value": 430000,
       "currency": "AUD",
-      "annual_return": 5.0
+      "annual_return": 0.0
     },
     {
       "name": "others",
@@ -104,7 +104,7 @@
   "expenses": [
     {
       "name": "🏠 房贷还款",
-      "annual": 80041
+      "annual": 83679
     },
     {
       "name": "🍽️ 日常生活",
@@ -163,8 +163,8 @@
     "m2_self_employed": false
   },
   "monte_carlo": {
-    "initial_capital": 2200000,
-    "annual_withdrawal": 88000,
+    "initial_capital": 3426953,
+    "annual_withdrawal": 101009,
     "years": 30,
     "nominal_return": 7.0,
     "volatility": 12.0,
