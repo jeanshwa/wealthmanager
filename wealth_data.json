@@ -87,17 +87,12 @@
   "income": [
     {
       "name": "My salary",
-      "amount": 75000,
+      "amount": 30000,
       "currency": "AUD"
     },
     {
       "name": "partner salary",
-      "amount": 75000,
-      "currency": "AUD"
-    },
-    {
-      "name": "Business income",
-      "amount": 0,
+      "amount": 30000,
       "currency": "AUD"
     }
   ],
@@ -172,7 +167,7 @@
     "num_sims": 5000
   },
   "business": {
-    "gross_revenue": 0,
+    "gross_revenue": 180000,
     "gst_rate": 10.0
   }
 }
