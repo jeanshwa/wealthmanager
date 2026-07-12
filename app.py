@@ -12,6 +12,12 @@ st.set_page_config(page_title="Wealth Manager", page_icon="💰", layout="wide")
 # Global CSS for consistent fonts and bigger sidebar menu
 st.markdown("""
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+/* Apply Inter globally */
+html, body, [class*="css"], [data-testid="stAppViewContainer"],
+[data-testid="stSidebar"], input, button, select, textarea {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
 /* Sidebar radio buttons - bigger, more spacing */
 div[data-testid="stSidebar"] div[role="radiogroup"] label {
     font-size: 16px !important;
