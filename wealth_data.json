@@ -11,10 +11,10 @@
       "name": "hastings",
       "value": 7000000,
       "currency": "AUD",
-      "mortgage": 1150000,
+      "mortgage": 0,
       "interest_rate": 5.99,
       "loan_years": 29,
-      "monthly_repay": 5740.416666666667
+      "monthly_repay": 0
     },
     {
       "name": "3001",
@@ -23,15 +23,6 @@
       "mortgage": 0,
       "interest_rate": 0.0,
       "loan_years": 20,
-      "monthly_repay": 0
-    },
-    {
-      "name": "crescent",
-      "value": 2500000,
-      "currency": "AUD",
-      "mortgage": 0,
-      "interest_rate": 0.0,
-      "loan_years": 25,
       "monthly_repay": 0
     }
   ],
@@ -55,7 +46,7 @@
   "other_assets": [
     {
       "name": "savings",
-      "value": 0,
+      "value": 1600000,
       "currency": "AUD",
       "annual_return": 4.0
     },
@@ -72,14 +63,14 @@
       "annual_return": 0.0
     },
     {
-      "name": "equity",
+      "name": "equity alex",
       "value": 430000,
       "currency": "AUD",
       "annual_return": 0.0
     },
     {
-      "name": "others",
-      "value": 50000,
+      "name": "cars, furnitures",
+      "value": 80000,
       "currency": "AUD",
       "annual_return": 0.0
     }
@@ -87,19 +78,19 @@
   "income": [
     {
       "name": "My salary",
-      "amount": 30000,
+      "amount": 22000,
       "currency": "AUD"
     },
     {
       "name": "partner salary",
-      "amount": 30000,
+      "amount": 22000,
       "currency": "AUD"
     }
   ],
   "expenses": [
     {
       "name": "🏠 房贷还款",
-      "annual": 68885
+      "annual": 0
     },
     {
       "name": "🍽️ Fixed items: council, water, phone, internet, electricity, gas",
