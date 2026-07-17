@@ -50,7 +50,7 @@
       "currency": "AUD",
       "annual_return": 4.0,
       "taxable_income": true,
-      "owner": "joint"
+      "owner": "self"
     },
     {
       "name": "alipay",
@@ -88,9 +88,9 @@
   "income": [
     {
       "name": "My salary",
-      "amount": 0,
+      "amount": 22000,
       "currency": "AUD",
-      "owner": "joint"
+      "owner": "self"
     },
     {
       "name": "partner salary",
