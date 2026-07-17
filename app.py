@@ -540,6 +540,29 @@ def to_display(amount, from_cur, display_cur, fx):
 # FINANCIAL CALCULATIONS
 # ================================================================
 AU_TAX_BRACKETS = [(18200, 0), (45000, 0.16), (135000, 0.30), (190000, 0.37), (float("inf"), 0.45)]
+# 2025-26 Medicare levy low-income thresholds (single, no dependants) — below LOWER: no levy;
+# LOWER-UPPER: levy phases in at 10c per $1 over LOWER; above UPPER: full 2%.
+MEDICARE_LOWER, MEDICARE_UPPER = 28011, 35013
+
+def medicare_levy(income):
+    if income <= MEDICARE_LOWER:
+        return 0
+    full = income * 0.02
+    if income <= MEDICARE_UPPER:
+        return min(full, (income - MEDICARE_LOWER) * 0.10)
+    return full
+
+def lito(income):
+    """Low Income Tax Offset — reduces tax payable (not refundable below $0)."""
+    if income <= 37500:
+        offset = 700
+    elif income <= 45000:
+        offset = 700 - 0.05 * (income - 37500)
+    elif income <= 66667:
+        offset = 325 - 0.015 * (income - 45000)
+    else:
+        offset = 0
+    return max(offset, 0)
 
 def au_income_tax(income):
     tax, prev = 0, 0
@@ -548,7 +571,8 @@ def au_income_tax(income):
         if taxable > 0: tax += taxable * rate
         prev = threshold
         if income <= threshold: break
-    return tax + income * 0.02
+    tax = max(tax - lito(income), 0)
+    return tax + medicare_levy(income)
 
 def calc_net_worth(d):
     fx, dc = d["fx_rates"], d["display_currency"]
