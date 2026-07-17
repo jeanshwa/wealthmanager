@@ -50,7 +50,7 @@
       "currency": "AUD",
       "annual_return": 4.0,
       "taxable_income": true,
-      "owner": "self"
+      "owner": "joint"
     },
     {
       "name": "alipay",
@@ -58,7 +58,7 @@
       "currency": "CNY",
       "annual_return": 1.0,
       "taxable_income": false,
-      "owner": "joint"
+      "owner": "self"
     },
     {
       "name": "hsbc hk",
@@ -66,7 +66,7 @@
       "currency": "HKD",
       "annual_return": 0.0,
       "taxable_income": false,
-      "owner": "joint"
+      "owner": "self"
     },
     {
       "name": "equity alex",
@@ -74,7 +74,7 @@
       "currency": "AUD",
       "annual_return": 0.0,
       "taxable_income": false,
-      "owner": "joint"
+      "owner": "self"
     },
     {
       "name": "cars, furnitures",
@@ -88,15 +88,15 @@
   "income": [
     {
       "name": "My salary",
-      "amount": 22000,
+      "amount": 0,
       "currency": "AUD",
       "owner": "self"
     },
     {
       "name": "partner salary",
-      "amount": 0,
+      "amount": 15000,
       "currency": "AUD",
-      "owner": "joint"
+      "owner": "spouse"
     }
   ],
   "expenses": [
