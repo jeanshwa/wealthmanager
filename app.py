@@ -868,7 +868,7 @@ def page_assets():
         o["name"] = c2.text_input("name", o["name"], key=f"on_{i}", label_visibility="collapsed")
         o["value"] = money_input("", o["value"], f"ov_{i}", container=c3)
         o["annual_return"] = c4.number_input("Ret%", value=o.get("annual_return", 0.0),
-            step=0.5, format="%.1f", key=f"oar_{i}", label_visibility="collapsed")
+            step=0.25, format="%.2f", key=f"oar_{i}", label_visibility="collapsed")
         o["taxable_income"] = c5.checkbox(t("taxable_income"), value=o.get("taxable_income", False),
             key=f"oti_{i}")
         o["owner"] = c6.selectbox(t("owner"), OWNERS, index=OWNERS.index(o.get("owner", "joint")),
