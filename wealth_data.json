@@ -2,9 +2,9 @@
   "lang": "en",
   "display_currency": "AUD",
   "fx_rates": {
-    "USD": 0.699835,
-    "CNY": 4.737,
-    "HKD": 5.4855
+    "USD": 0.699916,
+    "CNY": 4.741,
+    "HKD": 5.487
   },
   "properties": [
     {
@@ -48,31 +48,36 @@
       "name": "savings",
       "value": 1600000,
       "currency": "AUD",
-      "annual_return": 4.0
+      "annual_return": 4.0,
+      "taxable_income": false
     },
     {
       "name": "alipay",
       "value": 15000,
       "currency": "CNY",
-      "annual_return": 1.0
+      "annual_return": 1.0,
+      "taxable_income": false
     },
     {
       "name": "hsbc hk",
       "value": 7000,
       "currency": "HKD",
-      "annual_return": 0.0
+      "annual_return": 0.0,
+      "taxable_income": false
     },
     {
       "name": "equity alex",
       "value": 430000,
       "currency": "AUD",
-      "annual_return": 0.0
+      "annual_return": 0.0,
+      "taxable_income": false
     },
     {
       "name": "cars, furnitures",
       "value": 80000,
       "currency": "AUD",
-      "annual_return": 0.0
+      "annual_return": 0.0,
+      "taxable_income": false
     }
   ],
   "income": [
