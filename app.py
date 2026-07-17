@@ -46,6 +46,7 @@ DATA_FILE = "wealth_data.json"
 CURRENCIES = ["AUD", "USD", "CNY", "HKD"]
 CUR_SYMBOLS = {"AUD": "A$", "USD": "US$", "CNY": "¥", "HKD": "HK$"}
 CUR_FLAGS = {"AUD": "🇦🇺", "USD": "🇺🇸", "CNY": "🇨🇳", "HKD": "🇭🇰"}
+OWNERS = ["self", "spouse", "joint"]
 PLOTLY_LAYOUT = dict(
     paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
     font=dict(color="#c9d1d9", size=12), margin=dict(l=40, r=20, t=40, b=40),
@@ -83,6 +84,19 @@ TR = {
     "loan_years": {"zh": "剩余年限", "en": "Remaining Years"},
     "monthly_repay": {"zh": "每月还款 (自动)", "en": "Monthly Repay (auto)"},
     "annual_return": {"zh": "年回报率 %", "en": "Annual Return %"},
+    "taxable_income": {"zh": "应税", "en": "Taxable"},
+    "home_loan_repayment": {"zh": "🏠 房贷还款", "en": "🏠 Home Loan Repayment"},
+    "owner": {"zh": "归属", "en": "Owner"},
+    "owner_self": {"zh": "本人", "en": "Self"},
+    "owner_spouse": {"zh": "配偶", "en": "Spouse"},
+    "owner_joint": {"zh": "共同", "en": "Joint"},
+    "income_breakdown": {"zh": "收入来源明细", "en": "Income Breakdown"},
+    "income_by_person": {"zh": "个人收入与税务", "en": "Income & Tax by Person"},
+    "salary_income": {"zh": "工资收入", "en": "Salary Income"},
+    "savings_income": {"zh": "储蓄/利息收入", "en": "Savings Interest Income"},
+    "tax_payable": {"zh": "应缴税额", "en": "Tax Payable"},
+    "after_tax_income": {"zh": "税后收入", "en": "After-tax Income"},
+    "household_available": {"zh": "家庭可支配收入 (税后)", "en": "Household Available (After Tax)"},
     "add_property": {"zh": "＋ 添加房产", "en": "＋ Add Property"},
     "add_asset": {"zh": "＋ 添加资产", "en": "＋ Add Asset"},
     "remove": {"zh": "删除", "en": "Remove"},
@@ -313,22 +327,22 @@ def get_default_data():
             {"name": "现金", "value": 0, "currency": "AUD"},
         ],
         "other_assets": [
-            {"name": "澳洲银行存款", "value": 0, "currency": "AUD", "annual_return": 4.0},
-            {"name": "中国银行存款", "value": 0, "currency": "CNY", "annual_return": 2.0},
-            {"name": "香港账户", "value": 0, "currency": "HKD", "annual_return": 3.5},
-            {"name": "个人 ETF (super外)", "value": 0, "currency": "USD", "annual_return": 7.0},
-            {"name": "其他资产", "value": 0, "currency": "AUD", "annual_return": 0.0},
+            {"name": "澳洲银行存款", "value": 0, "currency": "AUD", "annual_return": 4.0, "taxable_income": False, "owner": "joint"},
+            {"name": "中国银行存款", "value": 0, "currency": "CNY", "annual_return": 2.0, "taxable_income": False, "owner": "joint"},
+            {"name": "香港账户", "value": 0, "currency": "HKD", "annual_return": 3.5, "taxable_income": False, "owner": "joint"},
+            {"name": "个人 ETF (super外)", "value": 0, "currency": "USD", "annual_return": 7.0, "taxable_income": False, "owner": "joint"},
+            {"name": "其他资产", "value": 0, "currency": "AUD", "annual_return": 0.0, "taxable_income": False, "owner": "joint"},
         ],
         "business": {
             "gross_revenue": 0, "gst_rate": 10.0,
         },
         "income": [
-            {"name": "Salary — Self", "amount": 0, "currency": "AUD"},
-            {"name": "Salary — Spouse", "amount": 0, "currency": "AUD"},
-            {"name": "Office Rent (in Super Fund)", "amount": 0, "currency": "AUD"},
+            {"name": "Salary — Self", "amount": 0, "currency": "AUD", "owner": "self"},
+            {"name": "Salary — Spouse", "amount": 0, "currency": "AUD", "owner": "spouse"},
+            {"name": "Office Rent (in Super Fund)", "amount": 0, "currency": "AUD", "owner": "joint"},
         ],
         "expenses": [
-            {"name": "🏠 房贷还款", "annual": 0},
+            {"name": "🏠 Home Loan Repayment", "annual": 0},
             {"name": "🍽️ 日常生活", "annual": 0},
             {"name": "🎓 子女教育", "annual": 0},
             {"name": "🏥 私人医保", "annual": 0},
@@ -494,6 +508,10 @@ def init_data():
             p.setdefault("loan_years", 25)
         for o in loaded.get("other_assets", []):
             o.setdefault("annual_return", 0.0)
+            o.setdefault("taxable_income", False)
+            o.setdefault("owner", "joint")
+        for i in loaded.get("income", []):
+            i.setdefault("owner", "joint")
         st.session_state.data = loaded
     if "lang" not in st.session_state:
         st.session_state.lang = st.session_state.data.get("lang", "en")
@@ -555,23 +573,61 @@ def calc_passive_income(d):
 
 def calc_cashflow(d):
     fx = d["fx_rates"]
+    income_breakdown = []
+    # Each taxpayer (self/spouse) is assessed on their own combined taxable income, once,
+    # through the progressive brackets — not per income source. "Joint" items split 50/50.
+    owner_income = {"self": {"salary": 0.0, "interest": 0.0}, "spouse": {"salary": 0.0, "interest": 0.0}}
+    def attribute(owner, amt, kind):
+        if owner == "joint":
+            owner_income["self"][kind] += amt / 2
+            owner_income["spouse"][kind] += amt / 2
+        elif owner in owner_income:
+            owner_income[owner][kind] += amt
     # Personal salaries
-    personal_gross = sum(to_aud(i["amount"], i["currency"], fx) for i in d["income"])
-    tax = sum(au_income_tax(max(to_aud(i["amount"], i["currency"], fx), 0)) for i in d["income"] if i["amount"] > 0)
-    personal_after_tax = personal_gross - tax
+    personal_gross = 0
+    for i in d["income"]:
+        amt = to_aud(i["amount"], i["currency"], fx)
+        personal_gross += amt
+        if amt > 0:
+            income_breakdown.append({"name": i["name"], "amount": amt})
+        attribute(i.get("owner", "joint"), amt, "salary")
+    # Interest/income from cash & other accounts flagged as taxable income (e.g. bank savings interest)
+    taxable_interest = 0
+    for o in d["other_assets"]:
+        if not o.get("taxable_income"):
+            continue
+        amt = to_aud(o["value"], o["currency"], fx) * o.get("annual_return", 0) / 100
+        taxable_interest += amt
+        if amt > 0:
+            income_breakdown.append({"name": o["name"], "amount": amt})
+        attribute(o.get("owner", "joint"), amt, "interest")
+    personal_gross += taxable_interest
+    owner_summary = []
+    tax = 0
+    personal_after_tax = 0
+    for owner in ("self", "spouse"):
+        salary = owner_income[owner]["salary"]
+        interest = owner_income[owner]["interest"]
+        gross = salary + interest
+        t_owed = au_income_tax(max(gross, 0))
+        tax += t_owed
+        personal_after_tax += gross - t_owed
+        owner_summary.append({"owner": owner, "salary": salary, "interest": interest,
+            "gross": gross, "tax": t_owed, "after_tax": gross - t_owed})
     # Business budget (after GST, minus salaries and super already paid)
     biz = d.get("business", {})
     biz_gross = biz.get("gross_revenue", 0)
     gst = biz_gross * biz.get("gst_rate", 10.0) / 100
-    # Super payable by business (11.5% on all salaries)
+    # Super payable by business (11.5% on all salaries) — excludes account interest, not salary
     SG_RATE = 0.115
-    super_payable = personal_gross * SG_RATE
-    biz_budget = biz_gross - gst - personal_gross - super_payable
+    salaries_gross = sum(to_aud(i["amount"], i["currency"], fx) for i in d["income"])
+    super_payable = salaries_gross * SG_RATE
+    biz_budget = biz_gross - gst - salaries_gross - super_payable
     # Total available = personal after tax + business budget
     total_available = personal_after_tax + max(biz_budget, 0)
     total_exp = sum(e["annual"] for e in d["expenses"])
     surplus = total_available - total_exp
-    return personal_gross, tax, personal_after_tax, total_exp, surplus, max(biz_budget, 0)
+    return personal_gross, tax, personal_after_tax, total_exp, surplus, max(biz_budget, 0), income_breakdown, owner_summary
 
 def project_retirement(d):
     r = d["retirement"]
@@ -665,7 +721,7 @@ def check_password():
 def page_dashboard():
     d = st.session_state.data
     total_a, total_l, nw, breakdown = calc_net_worth(d)
-    gross, tax, after_tax, total_exp, surplus, biz_budget = calc_cashflow(d)
+    gross, tax, after_tax, total_exp, surplus, biz_budget, income_breakdown, owner_summary = calc_cashflow(d)
     acc, draw, cap_retire, annual_exp_ret, deplete_age, passive = project_retirement(d)
     dc = d["display_currency"]
     fx = d["fx_rates"]
@@ -782,21 +838,25 @@ def page_assets():
     st.subheader(t("cash_other"))
     others_rm = []
     for i, o in enumerate(d["other_assets"]):
-        c1, c2, c3, c4, c5 = st.columns([1, 3, 2, 0.8, 0.4])
+        c1, c2, c3, c4, c5, c6, c7 = st.columns([1, 2.5, 1.8, 0.8, 1, 1.1, 0.4])
         o["currency"] = c1.selectbox("ccy", CURRENCIES, index=CURRENCIES.index(o["currency"]),
             key=f"oc_{i}", format_func=lambda x: f"{CUR_FLAGS[x]}", label_visibility="collapsed")
         o["name"] = c2.text_input("name", o["name"], key=f"on_{i}", label_visibility="collapsed")
         o["value"] = money_input("", o["value"], f"ov_{i}", container=c3)
         o["annual_return"] = c4.number_input("Ret%", value=o.get("annual_return", 0.0),
             step=0.5, format="%.1f", key=f"oar_{i}", label_visibility="collapsed")
-        if c5.button("✕", key=f"orm_{i}"):
+        o["taxable_income"] = c5.checkbox(t("taxable_income"), value=o.get("taxable_income", False),
+            key=f"oti_{i}")
+        o["owner"] = c6.selectbox(t("owner"), OWNERS, index=OWNERS.index(o.get("owner", "joint")),
+            key=f"oo_{i}", format_func=lambda x: t(f"owner_{x}"), label_visibility="collapsed")
+        if c7.button("✕", key=f"orm_{i}"):
             others_rm.append(i)
     for i in sorted(others_rm, reverse=True):
         d["other_assets"].pop(i); st.rerun()
     passive = calc_passive_income(d)
     c1, c2 = st.columns(2)
     if c1.button(t("add_asset")):
-        d["other_assets"].append({"name": t("new_asset"), "value": 0, "currency": "AUD", "annual_return": 0.0}); st.rerun()
+        d["other_assets"].append({"name": t("new_asset"), "value": 0, "currency": "AUD", "annual_return": 0.0, "taxable_income": False, "owner": "joint"}); st.rerun()
     if passive > 0:
         c2.caption(f"📈 {t('passive_income')}: {fmt_md(passive, 'AUD')}/yr")
 
@@ -817,6 +877,7 @@ def page_assets():
 def page_cashflow():
     d = st.session_state.data
     dc = d["display_currency"]
+    fx = d["fx_rates"]
     d.setdefault("business", {"gross_revenue": 0, "gst_rate": 10.0})
     biz = d["business"]
 
@@ -826,53 +887,62 @@ def page_cashflow():
     biz["gross_revenue"] = money_input(t("biz_gross"), biz["gross_revenue"], "biz_gross")
     biz["gst_rate"] = c2.number_input(t("gst_rate"), value=biz.get("gst_rate", 10.0),
         step=0.5, format="%.1f", key="biz_gst")
-    gst_amount = biz["gross_revenue"] * biz["gst_rate"] / 100
-    after_gst = biz["gross_revenue"] - gst_amount
-    total_salaries = sum(i["amount"] for i in d["income"])
-    # Super payable by business (11.5% on all salaries)
-    SG_RATE = 0.115
-    super_payable = total_salaries * SG_RATE
-    total_cost_to_biz = total_salaries + super_payable
-    biz_expenses_budget = after_gst - total_cost_to_biz
-
-    c1, c2, c3 = st.columns(3)
-    c1.metric(t("after_gst"), fmt_cur(after_gst, "AUD"), f"GST: {fmt_cur(gst_amount, 'AUD')}")
-    c2.metric(t("total_salaries"), fmt_cur(total_cost_to_biz, "AUD"),
-        f"Super: {fmt_cur(super_payable, 'AUD')}" if super_payable > 0 else None)
-    c3.metric(t("biz_expense_budget"), fmt_cur(biz_expenses_budget, "AUD"))
+    # Placeholder: filled in after the Income section below commits this render's salary edits,
+    # so these metrics never show a stale (previous-render) salary total.
+    biz_metrics = st.empty()
 
     # ── Personal Income (salaries/drawings from business) ──
     st.subheader(t("income"))
     st.caption(t("personal_salary"))
     inc_rm = []
     for i, inc in enumerate(d["income"]):
-        c1, c2, c3, c4, c5 = st.columns([1, 3, 2.5, 1.2, 0.5])
+        c1, c2, c3, c4, c5, c6 = st.columns([1, 2.5, 2, 1.1, 1.2, 0.5])
         inc["currency"] = c1.selectbox("ccy", CURRENCIES, index=CURRENCIES.index(inc["currency"]),
             key=f"ic_{i}", label_visibility="collapsed", format_func=lambda x: f"{CUR_FLAGS[x]}")
         inc["name"] = c2.text_input("name", inc["name"], key=f"in_{i}", label_visibility="collapsed")
         inc["amount"] = money_input("", inc["amount"], f"ia_{i}", container=c3)
-        c4.caption(esc(f"{CUR_SYMBOLS.get(inc['currency'],'A$')}{inc['amount']/12:,.0f}/mo"))
-        if c5.button("✕", key=f"irm_{i}"):
+        inc["owner"] = c4.selectbox(t("owner"), OWNERS, index=OWNERS.index(inc.get("owner", "joint")),
+            key=f"io_{i}", format_func=lambda x: t(f"owner_{x}"), label_visibility="collapsed")
+        c5.caption(esc(f"{CUR_SYMBOLS.get(inc['currency'],'A$')}{inc['amount']/12:,.0f}/mo"))
+        if c6.button("✕", key=f"irm_{i}"):
             inc_rm.append(i)
     for i in sorted(inc_rm, reverse=True):
         d["income"].pop(i); st.rerun()
     if st.button(t("add_income")):
-        d["income"].append({"name": t("new_income"), "amount": 0, "currency": "AUD"}); st.rerun()
+        d["income"].append({"name": t("new_income"), "amount": 0, "currency": "AUD", "owner": "joint"}); st.rerun()
+
+    # Now that d["income"] reflects this render's edits, compute and draw the Business metrics
+    # (matches the biz_budget formula in calc_cashflow: after-GST revenue minus salaries and super).
+    gst_amount = biz["gross_revenue"] * biz["gst_rate"] / 100
+    after_gst = biz["gross_revenue"] - gst_amount
+    salaries_gross = sum(to_aud(i["amount"], i["currency"], fx) for i in d["income"])
+    SG_RATE = 0.115
+    super_payable = salaries_gross * SG_RATE
+    biz_expenses_budget = after_gst - salaries_gross - super_payable
+    with biz_metrics.container():
+        bc1, bc2, bc3 = st.columns(3)
+        bc1.metric(t("after_gst"), fmt_cur(after_gst, "AUD"), f"GST: {fmt_cur(gst_amount, 'AUD')}")
+        bc2.metric(t("total_salaries"), fmt_cur(salaries_gross + super_payable, "AUD"),
+            f"Super: {fmt_cur(super_payable, 'AUD')}" if super_payable > 0 else None)
+        bc3.metric(t("biz_expense_budget"), fmt_cur(biz_expenses_budget, "AUD"))
 
     # Expenses
     st.subheader(t("expenses"))
     # Auto-calculate total annual mortgage from properties
     total_monthly_repay = sum(p.get("monthly_repay", 0) for p in d["properties"])
     total_annual_repay = round(total_monthly_repay * 12)
+    def is_mortgage_exp(name):
+        n = name.lower()
+        return "房贷" in name or "mortgage" in n or "home loan" in n
     for exp in d["expenses"]:
-        if "房贷" in exp["name"] or "mortgage" in exp["name"].lower():
+        if is_mortgage_exp(exp["name"]):
             exp["annual"] = total_annual_repay
     exp_rm = []
     for i, exp in enumerate(d["expenses"]):
-        is_mortgage = "房贷" in exp["name"] or "mortgage" in exp["name"].lower()
+        is_mortgage = is_mortgage_exp(exp["name"])
         c1, c2, c3, c4 = st.columns([4, 3, 2, 0.6])
         if is_mortgage:
-            c1.text_input(t("name"), exp["name"], key=f"en_{i}", disabled=True, label_visibility="collapsed")
+            c1.text_input(t("name"), t("home_loan_repayment"), key=f"en_{i}", disabled=True, label_visibility="collapsed")
             c2.text_input("annual", f"{total_annual_repay:,}", key=f"ea_m_{i}", disabled=True, label_visibility="collapsed")
             c3.caption(f"{t('monthly')} {esc(CUR_SYMBOLS.get(dc,'$'))}{total_monthly_repay:,.0f} · {t('auto_link')}")
         else:
@@ -888,17 +958,32 @@ def page_cashflow():
 
     # Summary
     st.divider()
-    gross, tax, after_tax, total_exp, surplus, biz_budget = calc_cashflow(d)
+    gross, tax, after_tax, total_exp, surplus, biz_budget, income_breakdown, owner_summary = calc_cashflow(d)
     total_available = after_tax + biz_budget
-    c1, c2, c3, c4 = st.columns(4)
-    c1.metric(t("gross_income"), fmt_cur(gross, "AUD"), f"{t('tax_label')} {fmt_cur(tax, 'AUD')}")
-    c2.metric(t("biz_expense_budget"), fmt_cur(biz_budget, "AUD"))
-    c3.metric(t("total_expenses"), fmt_cur(total_exp, "AUD"))
-    c4.metric(t("net_surplus"), fmt_cur(surplus, "AUD"),
+
+    st.subheader(t("income_by_person"))
+    p1, p2 = st.columns(2)
+    for col, o in zip((p1, p2), owner_summary):
+        owner_key = o["owner"]
+        with col.container(border=True):
+            st.markdown(f"**{t('owner_' + owner_key)}**")
+            st.caption(f"{t('salary_income')}: {fmt_md(o['salary'], 'AUD')}")
+            st.caption(f"{t('savings_income')}: {fmt_md(o['interest'], 'AUD')}")
+            st.caption(f"{t('gross_income')}: {fmt_md(o['gross'], 'AUD')}")
+            st.caption(f"{t('tax_payable')}: {fmt_md(o['tax'], 'AUD')}")
+            st.markdown(f"{t('after_tax_income')}: **{fmt_md(o['after_tax'], 'AUD')}**")
+
+    c1, c2, c3 = st.columns(3)
+    c1.metric(t("biz_expense_budget"), fmt_cur(biz_budget, "AUD"))
+    c2.metric(t("total_expenses"), fmt_cur(total_exp, "AUD"))
+    c3.metric(t("net_surplus"), fmt_cur(surplus, "AUD"),
         f"{t('savings_rate')} {surplus/total_available*100:.0f}%" if total_available > 0 else "—")
-    # Waterfall
+    if income_breakdown:
+        st.caption(f"{t('income_breakdown')}: " + " · ".join(
+            f"{esc(b['name'])} {fmt_md(b['amount'], 'AUD')}" for b in income_breakdown))
+    # Waterfall — household expenses against after-tax income (tax already deducted per person above)
     st.subheader(t("waterfall"))
-    labels, values = [t("gross_income"), t("tax_label")], [gross, -tax]
+    labels, values = [t("household_available")], [total_available]
     for e in d["expenses"]:
         if e["annual"] > 0: labels.append(e["name"]); values.append(-e["annual"])
     labels.append(t("net_surplus")); values.append(surplus)
