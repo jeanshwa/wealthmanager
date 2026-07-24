@@ -144,8 +144,8 @@ TR = {
         "en": "AU monthly cost × AU months + CN monthly cost × CN months (converted to AUD) + business-class ticket price × 2 × trips + health insurance"},
     "capital_needed_4pct": {"zh": "需要本金 (4%法则)", "en": "Capital Needed (4% Rule)"},
     "capital_needed_4pct_help": {
-        "zh": "退休年开支合计 × 25，即假设每年安全提取本金的4%用于生活开支",
-        "en": "Total Retirement Expense × 25 — assumes a 4% annual safe withdrawal rate"},
+        "zh": "退休年开支合计 ×（寿命预期 − 目标退休年龄），即按4%法则覆盖整个退休期的年数",
+        "en": "Total Retirement Expense × (Life Expectancy − Target Retirement Age) — the number of retirement years the 4% rule needs to cover"},
     "passive_income": {"zh": "被动收入/年", "en": "Passive Income/yr"},
     "sf_current": {"zh": "当前 Super Fund 状况", "en": "Current Super Fund Status"},
     "sf_total": {"zh": "Super Fund 总值", "en": "Super Fund Total"},
@@ -277,6 +277,7 @@ TR = {
     "about_text": {"zh": "Wealth v1.0 · 仅供个人财务规划参考，不构成理财或税务建议。\n\nBuilt with Streamlit + Plotly · 数据存储在本地。澳洲税率/Super 规则基于 2026-27 财年。", "en": "Wealth v1.0 · For personal planning only, not financial advice.\n\nBuilt with Streamlit + Plotly · Data stored locally. AU tax/super rules based on FY2026-27."},
     "not_financial_advice": {"zh": "仅供参考，不构成理财建议", "en": "Not financial advice"},
     "au_cost_aud": {"zh": "澳洲月开支 (AUD)", "en": "Australia Monthly Cost (AUD)"},
+    "au_cost_help": {"zh": "自动取自现金流页面的年支出总额 ÷ 12，不再需要单独手动输入", "en": "Automatically derived from the Cash Flow page's total annual expenses ÷ 12 — no separate manual entry needed"},
     "cn_cost_aud": {"zh": "中国月开支 (CNY)", "en": "China Monthly Cost (CNY)"},
     "ticket_aud": {"zh": "人均往返票价 (AUD)", "en": "Ticket Price per person RT (AUD)"},
     "health_ins_aud": {"zh": "国际医疗险/年 (AUD)", "en": "Int\'l Health Insurance/yr (AUD)"},
@@ -375,7 +376,7 @@ def get_default_data():
         "retirement": {
             "current_age": 45, "target_age": 60, "life_expectancy": 90,
             "months_au": 6, "months_cn": 6,
-            "au_cost": 7700, "cn_cost": 9300,
+            "cn_cost": 9300,
             "biz_class_trips": 3, "ticket_price": 4200,
             "health_ins": 4000, "real_return": 3.5,
             "annual_contrib": 60000,
@@ -680,13 +681,18 @@ def calc_cashflow(d):
     surplus = total_available - total_exp
     return personal_gross, tax, personal_after_tax, total_exp, surplus, max(biz_budget, 0), income_breakdown, owner_summary
 
+def au_monthly_cost(d):
+    """Monthly AU living cost, derived from the Cash Flow page's actual total annual expenses
+    (no separate manual estimate needed)."""
+    return sum(e["annual"] for e in d["expenses"]) / 12
+
 def project_retirement(d):
     r = d["retirement"]
     fx = d["fx_rates"]
     years_to = r["target_age"] - r["current_age"]
     years_in = r["life_expectancy"] - r["target_age"]
     ret_return = r["real_return"] / 100
-    annual_exp = r["au_cost"] * r["months_au"] + to_aud(r["cn_cost"] * r["months_cn"], "CNY", fx) + r["biz_class_trips"] * r["ticket_price"] * 2 + r["health_ins"]
+    annual_exp = au_monthly_cost(d) * r["months_au"] + to_aud(r["cn_cost"] * r["months_cn"], "CNY", fx) + r["biz_class_trips"] * r["ticket_price"] * 2 + r["health_ins"]
     passive = calc_passive_income(d)
     # Total investable = super (live from Assets) + other assets (in AUD)
     super_total = sum(to_aud(s["value"], s["currency"], fx) for s in d["super_fund"])
@@ -733,14 +739,17 @@ def project_net_worth(d):
     super_total = sum(to_aud(s["value"], s["currency"], fx) for s in d["super_fund"])
     other_total = sum(to_aud(o["value"], o["currency"], fx) for o in d["other_assets"])
     invest_bal = super_total + other_total
-    annual_exp = r["au_cost"] * r["months_au"] + to_aud(r["cn_cost"] * r["months_cn"], "CNY", fx) + r["biz_class_trips"] * r["ticket_price"] * 2 + r["health_ins"]
+    annual_exp = au_monthly_cost(d) * r["months_au"] + to_aud(r["cn_cost"] * r["months_cn"], "CNY", fx) + r["biz_class_trips"] * r["ticket_price"] * 2 + r["health_ins"]
     passive = calc_passive_income(d)
     net_withdrawal = max(annual_exp - passive, 0)
+    # Pre-retirement years still pay today's actual living costs (Cash Flow expenses,
+    # e.g. mortgage/groceries/school) out of the same capital, not just add contributions.
+    pre_retire_expenses = sum(e["annual"] for e in d["expenses"])
 
     ages = [r["current_age"]]
     totals = [invest_bal + properties_equity(0)]
     for y in range(1, years_to + 1):
-        invest_bal = invest_bal * (1 + ret_return) + r["annual_contrib"]
+        invest_bal = invest_bal * (1 + ret_return) + r["annual_contrib"] - pre_retire_expenses
         ages.append(r["current_age"] + y)
         totals.append(invest_bal + properties_equity(y))
     for y in range(1, years_in + 1):
@@ -845,7 +854,7 @@ def page_dashboard():
     c3.metric("CNY", fmt_cur(nw_aud * fx.get("CNY", 4.72), "CNY"))
     c4.metric("HKD", fmt_cur(nw_aud * fx.get("HKD", 5.04), "HKD"))
 
-    needed = annual_exp_ret * 25
+    needed = annual_exp_ret * max(d["retirement"]["life_expectancy"] - d["retirement"]["target_age"], 0)
     gap = cap_retire - needed
     c1, c2, c3, c4 = st.columns(4)
     c1.metric(t("annual_cashflow"), fmt_cur(surplus, "AUD"))
@@ -1129,8 +1138,9 @@ def page_retirement():
     c1, c2 = st.columns(2)
     with c1:
         r["months_au"] = st.number_input(t("months_au"), value=r["months_au"], min_value=0, max_value=12, key="r_mau")
-        r["au_cost"] = money_input(t("au_cost_aud"), r["au_cost"], "r_auc")
-        st.caption(esc(f"A${r['au_cost']:,} × {r['months_au']}mo = A${r['au_cost']*r['months_au']:,}/yr"))
+        au_cost = au_monthly_cost(d)
+        st.metric(t("au_cost_aud"), fmt_cur(au_cost, "AUD"), help=t("au_cost_help"))
+        st.caption(esc(f"A${au_cost:,.0f} × {r['months_au']}mo = A${au_cost*r['months_au']:,.0f}/yr"))
         r["biz_class_trips"] = st.number_input(t("biz_class_trips"), value=r["biz_class_trips"], min_value=0, max_value=12, key="r_bct")
     with c2:
         r["months_cn"] = st.number_input(t("months_cn"), value=r["months_cn"], min_value=0, max_value=12, key="r_mcn")
@@ -1147,7 +1157,7 @@ def page_retirement():
     c3.metric(t("current_super_total"), fmt_cur(super_total, "AUD"))
     # Calculate
     acc, draw, cap_retire, annual_exp, deplete_age, passive = project_retirement(d)
-    needed = annual_exp * 25
+    needed = annual_exp * max(r["life_expectancy"] - r["target_age"], 0)
     net_withdrawal = max(annual_exp - passive, 0)
     st.divider()
     c1, c2, c3, c4 = st.columns(4)

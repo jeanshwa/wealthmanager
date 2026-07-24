@@ -2,9 +2,9 @@
   "lang": "en",
   "display_currency": "AUD",
   "fx_rates": {
-    "USD": 0.697473,
-    "CNY": 4.7283,
-    "HKD": 5.4709
+    "USD": 0.698959,
+    "CNY": 4.7182,
+    "HKD": 5.477
   },
   "properties": [
     {
@@ -145,7 +145,7 @@
   ],
   "retirement": {
     "current_age": 45,
-    "target_age": 60,
+    "target_age": 46,
     "life_expectancy": 90,
     "months_au": 6,
     "months_cn": 6,
