@@ -2,9 +2,9 @@
   "lang": "en",
   "display_currency": "AUD",
   "fx_rates": {
-    "USD": 0.698227,
-    "CNY": 4.7276,
-    "HKD": 5.4497
+    "USD": 0.697473,
+    "CNY": 4.7283,
+    "HKD": 5.4709
   },
   "properties": [
     {
@@ -39,22 +39,22 @@
     },
     {
       "name": "Cash",
-      "value": 5000,
+      "value": 3000,
       "currency": "AUD"
     }
   ],
   "other_assets": [
     {
-      "name": "savings",
-      "value": 1600000,
+      "name": "anz alex",
+      "value": 800000,
       "currency": "AUD",
       "annual_return": 4.0,
       "taxable_income": true,
-      "owner": "joint"
+      "owner": "self"
     },
     {
       "name": "alipay",
-      "value": 15000,
+      "value": 10000,
       "currency": "CNY",
       "annual_return": 1.0,
       "taxable_income": false,
@@ -62,7 +62,7 @@
     },
     {
       "name": "hsbc hk",
-      "value": 7000,
+      "value": 6800,
       "currency": "HKD",
       "annual_return": 0.0,
       "taxable_income": false,
@@ -83,12 +83,20 @@
       "annual_return": 0.0,
       "taxable_income": false,
       "owner": "joint"
+    },
+    {
+      "name": "anz amanda",
+      "value": 800000,
+      "currency": "AUD",
+      "annual_return": 4.0,
+      "taxable_income": true,
+      "owner": "spouse"
     }
   ],
   "income": [
     {
       "name": "My salary",
-      "amount": 10000,
+      "amount": 0,
       "currency": "AUD",
       "owner": "self"
     },
@@ -106,15 +114,15 @@
     },
     {
       "name": "🍽️ Fixed items: council, water, phone, internet, electricity, gas",
-      "annual": 17260
+      "annual": 18220
     },
     {
       "name": "🎓 School, activities",
       "annual": 32140
     },
     {
-      "name": "🏥 Insurance (excluding business)",
-      "annual": 10800
+      "name": "🏥 Insurance (excluding business): home, health",
+      "annual": 10824
     },
     {
       "name": "🚗 Car & transport",
@@ -125,7 +133,7 @@
       "annual": 30000
     },
     {
-      "name": "📋 Business fixed (excluding office rent)",
+      "name": "📋 Business items (excluding office rent): ",
       "annual": 19220
     },
     {
@@ -151,18 +159,18 @@
   "super_opt": {
     "m1_name": "本人",
     "m2_name": "配偶",
-    "m1_balance": 60000,
-    "m2_balance": 30000,
-    "m1_sg": 3450,
-    "m2_sg": 3450,
-    "m1_income": 30000,
-    "m2_income": 30000,
+    "m1_balance": 600000,
+    "m2_balance": 300000,
+    "m1_sg": 0,
+    "m2_sg": 0,
+    "m1_income": 0,
+    "m2_income": 0,
     "m1_self_employed": false,
     "m2_self_employed": false
   },
   "monte_carlo": {
-    "initial_capital": 3426953,
-    "annual_withdrawal": 101009,
+    "initial_capital": 6232981,
+    "annual_withdrawal": 36982,
     "years": 30,
     "nominal_return": 7.0,
     "volatility": 12.0,
