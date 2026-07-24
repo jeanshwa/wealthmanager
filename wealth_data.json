@@ -14,7 +14,8 @@
       "mortgage": 0,
       "interest_rate": 5.99,
       "loan_years": 29,
-      "monthly_repay": 0
+      "monthly_repay": 0,
+      "appreciation_rate": 0.0
     },
     {
       "name": "3001",
@@ -23,7 +24,8 @@
       "mortgage": 0,
       "interest_rate": 0.0,
       "loan_years": 20,
-      "monthly_repay": 0
+      "monthly_repay": 0,
+      "appreciation_rate": 0.0
     }
   ],
   "super_fund": [
@@ -169,8 +171,8 @@
     "m2_self_employed": false
   },
   "monte_carlo": {
-    "initial_capital": 6232981,
-    "annual_withdrawal": 36982,
+    "initial_capital": 6232972,
+    "annual_withdrawal": 36980,
     "years": 30,
     "nominal_return": 7.0,
     "volatility": 12.0,
