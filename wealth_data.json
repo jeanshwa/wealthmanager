@@ -2,9 +2,9 @@
   "lang": "en",
   "display_currency": "AUD",
   "fx_rates": {
-    "USD": 0.697473,
-    "CNY": 4.7283,
-    "HKD": 5.4709
+    "USD": 0.698959,
+    "CNY": 4.7321,
+    "HKD": 5.4573
   },
   "properties": [
     {
@@ -15,7 +15,7 @@
       "interest_rate": 5.99,
       "loan_years": 29,
       "monthly_repay": 0,
-      "appreciation_rate": 0.0
+      "appreciation_rate": 1.0
     },
     {
       "name": "3001",
@@ -25,7 +25,7 @@
       "interest_rate": 0.0,
       "loan_years": 20,
       "monthly_repay": 0,
-      "appreciation_rate": 0.0
+      "appreciation_rate": -1.0
     }
   ],
   "super_fund": [
@@ -98,7 +98,7 @@
   "income": [
     {
       "name": "My salary",
-      "amount": 0,
+      "amount": 10000,
       "currency": "AUD",
       "owner": "self"
     },
@@ -163,12 +163,16 @@
     "m2_name": "配偶",
     "m1_balance": 600000,
     "m2_balance": 300000,
-    "m1_sg": 0,
+    "m1_sg": 1150,
     "m2_sg": 0,
-    "m1_income": 0,
+    "m1_income": 10000,
     "m2_income": 0,
     "m1_self_employed": false,
-    "m2_self_employed": false
+    "m2_self_employed": false,
+    "m1_self_contrib": 0,
+    "m2_self_contrib": 0,
+    "m1_planned_annual_contrib": 0,
+    "m2_planned_annual_contrib": 0
   },
   "monte_carlo": {
     "initial_capital": 6232972,
