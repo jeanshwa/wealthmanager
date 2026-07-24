@@ -98,7 +98,7 @@
   "income": [
     {
       "name": "My salary",
-      "amount": 10000,
+      "amount": 0,
       "currency": "AUD",
       "owner": "self"
     },
@@ -163,16 +163,16 @@
     "m2_name": "配偶",
     "m1_balance": 600000,
     "m2_balance": 300000,
-    "m1_sg": 1200,
+    "m1_sg": 0,
     "m2_sg": 0,
-    "m1_income": 10000,
+    "m1_income": 0,
     "m2_income": 0,
     "m1_self_employed": false,
     "m2_self_employed": false,
-    "m1_self_contrib": 31300,
-    "m2_self_contrib": 0,
-    "m1_planned_annual_contrib": 0,
-    "m2_planned_annual_contrib": 0
+    "m1_self_contrib": 25000,
+    "m2_self_contrib": 25000,
+    "m1_planned_annual_contrib": 15000,
+    "m2_planned_annual_contrib": 15000
   },
   "monte_carlo": {
     "initial_capital": 6232972,
