@@ -25,7 +25,7 @@
       "interest_rate": 0.0,
       "loan_years": 20,
       "monthly_repay": 0,
-      "appreciation_rate": -1.0
+      "appreciation_rate": 0.0
     }
   ],
   "super_fund": [
@@ -47,10 +47,10 @@
   ],
   "other_assets": [
     {
-      "name": "anz alex",
-      "value": 800000,
+      "name": "anz plus alex",
+      "value": 600000,
       "currency": "AUD",
-      "annual_return": 4.0,
+      "annual_return": 5.1,
       "taxable_income": true,
       "owner": "self"
     },
@@ -87,12 +87,20 @@
       "owner": "joint"
     },
     {
-      "name": "anz amanda",
-      "value": 800000,
+      "name": "anz plus amanda",
+      "value": 600000,
       "currency": "AUD",
-      "annual_return": 4.0,
+      "annual_return": 5.1,
       "taxable_income": true,
       "owner": "spouse"
+    },
+    {
+      "name": "macquarie joint",
+      "value": 390000,
+      "currency": "AUD",
+      "annual_return": 5.0,
+      "taxable_income": true,
+      "owner": "joint"
     }
   ],
   "income": [
@@ -119,7 +127,7 @@
       "annual": 18220
     },
     {
-      "name": "🎓 School, activities",
+      "name": "🎓 School, kids activities",
       "annual": 32140
     },
     {
@@ -128,14 +136,14 @@
     },
     {
       "name": "🚗 Car & transport",
-      "annual": 8000
+      "annual": 7500
     },
     {
       "name": "✈️ Holiday",
       "annual": 30000
     },
     {
-      "name": "📋 Business items (excluding office rent): ",
+      "name": "📋 Business items (excluding office rent): software, insurance, electrcity, internet",
       "annual": 19220
     },
     {
@@ -145,7 +153,7 @@
   ],
   "retirement": {
     "current_age": 45,
-    "target_age": 46,
+    "target_age": 50,
     "life_expectancy": 90,
     "months_au": 6,
     "months_cn": 6,
@@ -175,9 +183,9 @@
     "m2_planned_annual_contrib": 15000
   },
   "monte_carlo": {
-    "initial_capital": 6232972,
-    "annual_withdrawal": 36980,
-    "years": 30,
+    "initial_capital": 3907717,
+    "annual_withdrawal": 50821,
+    "years": 40,
     "nominal_return": 7.0,
     "volatility": 12.0,
     "inflation": 2.5,
