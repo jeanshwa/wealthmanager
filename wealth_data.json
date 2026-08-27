@@ -48,7 +48,7 @@
   "other_assets": [
     {
       "name": "anz plus alex",
-      "value": 600000,
+      "value": 600200,
       "currency": "AUD",
       "annual_return": 5.1,
       "taxable_income": true,
@@ -56,7 +56,7 @@
     },
     {
       "name": "alipay",
-      "value": 10000,
+      "value": 7000,
       "currency": "CNY",
       "annual_return": 1.0,
       "taxable_income": false,
@@ -88,7 +88,7 @@
     },
     {
       "name": "anz plus amanda",
-      "value": 600000,
+      "value": 600200,
       "currency": "AUD",
       "annual_return": 5.1,
       "taxable_income": true,
@@ -96,7 +96,7 @@
     },
     {
       "name": "macquarie joint",
-      "value": 390000,
+      "value": 392364,
       "currency": "AUD",
       "annual_return": 5.0,
       "taxable_income": true,
