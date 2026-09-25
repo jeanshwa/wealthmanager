@@ -36,7 +36,7 @@
     },
     {
       "name": "Equity",
-      "value": 63000,
+      "value": 68000,
       "currency": "AUD"
     },
     {
@@ -48,7 +48,7 @@
   "other_assets": [
     {
       "name": "anz plus alex",
-      "value": 600200,
+      "value": 600500,
       "currency": "AUD",
       "annual_return": 5.1,
       "taxable_income": true,
@@ -72,7 +72,7 @@
     },
     {
       "name": "equity alex",
-      "value": 430000,
+      "value": 520000,
       "currency": "AUD",
       "annual_return": 0.0,
       "taxable_income": false,
@@ -88,7 +88,7 @@
     },
     {
       "name": "anz plus amanda",
-      "value": 600200,
+      "value": 600500,
       "currency": "AUD",
       "annual_return": 5.1,
       "taxable_income": true,
