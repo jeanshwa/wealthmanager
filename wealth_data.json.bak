@@ -2,9 +2,9 @@
   "lang": "en",
   "display_currency": "AUD",
   "fx_rates": {
-    "USD": 0.69889,
-    "CNY": 4.6909,
-    "HKD": 5.483
+    "USD": 0.694798,
+    "CNY": 4.6637,
+    "HKD": 5.4504
   },
   "properties": [
     {
@@ -36,7 +36,7 @@
     },
     {
       "name": "Equity",
-      "value": 69000,
+      "value": 70000,
       "currency": "AUD"
     },
     {
@@ -72,7 +72,7 @@
     },
     {
       "name": "equity alex",
-      "value": 542000,
+      "value": 550000,
       "currency": "AUD",
       "annual_return": 0.0,
       "taxable_income": false,
@@ -152,7 +152,7 @@
     }
   ],
   "retirement": {
-    "current_age": 45,
+    "current_age": 46,
     "target_age": 50,
     "life_expectancy": 90,
     "months_au": 6,
@@ -183,8 +183,8 @@
     "m2_planned_annual_contrib": 15000
   },
   "monte_carlo": {
-    "initial_capital": 3907717,
-    "annual_withdrawal": 50821,
+    "initial_capital": 3872664,
+    "annual_withdrawal": 50762,
     "years": 40,
     "nominal_return": 7.0,
     "volatility": 12.0,
